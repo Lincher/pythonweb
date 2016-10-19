@@ -6,9 +6,8 @@ import db,field
 class ModelMetaclass(type):
 
     def __new__(cls,name,bases,attrs):
-
-        if name = 'Model':
-            return type.__new__(cls,name,bases,attrs)
+        if name=='Model':
+            return type.__new__(cls, name, bases, attrs)
 
         tableName = attrs.get('__table__',None) or name
         logging.info('found model:%s(table:%s)'%(name,tableName))
@@ -16,7 +15,7 @@ class ModelMetaclass(type):
         mappings = dict()#空字典
         fields= [] #空 list
         primaryKey =None
-# attrs里面存储了 许多参数
+# attrs里面存储了 许多参数 这里的 attrs 就是后面定义类的时候 类的属性
         for k,v in attrs.items():
             if isinstance(v,Field):
                 logging.info('found mapping: %s==>%s'%(k,v))
@@ -72,7 +71,7 @@ class Model(dict,metaclass=ModelMetaclass):
         if value is None:
             field = self.__mappings__[key]
             if field.default is not None:
-                value field.default() if callable(field.default) else field.default
+                value = field.default() if callable(field.default) else field.default
                 logging.debug('using default value for %s:%s'% (key,str(value)))
                 setattr(self,key,value)
         return value
@@ -89,8 +88,8 @@ class Model(dict,metaclass=ModelMetaclass):
     async def save(self):
         args = list(map(slef.getValueOrDefault,self.__fields__))
         args.append(self.getValueOrDefault(self.__primary_key__))
-        rows =yield from execute(self.__insert__,args)
-        if rows !=1:
+        rows = await execute(self.__insert__,args)
+        if rows != 1:
             logging.warn('faild to insert record: affected rows:%s'%rows)
 
     async def update(self):

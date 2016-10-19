@@ -1,4 +1,4 @@
-import aiomysql,logging
+import aiomysql,logging,asyncio
 
 def log(sql,args=()):
     logging.info("SQL:%s"%sql)
@@ -35,9 +35,9 @@ async def select(sql,args,size=None):
         async with conn.cursor(aiomysql.DictCursor) as cur:
             await cur.execute(sql.replace("?","%s"),args or ())
             if size:
-                rs =yield from cur.fetchmany(size)
+                rs =await cur.fetchmany(size)
             else:
-                rs =yield from cur.fetchall()
+                rs =await cur.fetchall()
         # yield from cur.close()
         logging.info("rows returned:%s"%len(rs))
         return rs
