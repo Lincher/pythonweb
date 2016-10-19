@@ -2,8 +2,6 @@ __author__ ='Lincher'
 
 import db,field
 
-
-
 #魔术类，元数据类，创造类的类
 class ModelMetaclass(type):
 
