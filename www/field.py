@@ -22,7 +22,7 @@ class IntegerField(Field):
 class FloatField(Field):
 
     def __init__(self,name=None,primary_key=False,default=0.0):
-        super().__init__(name,'real',primary,default)
+        super().__init__(name,'real',primary_key,default)
 
 class TextField(Field):
 

@@ -1,6 +1,6 @@
 __author__ ='Lincher'
 
-import db,field
+import db,field,logging
 
 #魔术类，元数据类，创造类的类
 class ModelMetaclass(type):
@@ -17,7 +17,7 @@ class ModelMetaclass(type):
         primaryKey =None
 # attrs里面存储了 许多参数 这里的 attrs 就是后面定义类的时候 类的属性
         for k,v in attrs.items():
-            if isinstance(v,Field):
+            if isinstance(v,field.Field):
                 logging.info('found mapping: %s==>%s'%(k,v))
                 mappings[k]=v  #记录了某一个key是什么字段
                 if v.primary_key: #一些和主键相关的判断
@@ -27,7 +27,7 @@ class ModelMetaclass(type):
                 else:
                     fields.append(k) #如果不是主键 就这个键添加到 列表中
         
-        if not primaryKey:#meiyou zhujian
+        if not primaryKey:#meiyou zhujian 
             raise RuntimeError("Primary key not found")
         for k in mappings.keys():
             attrs.pop(k)    #把所有在字典里记录的主键pop出来，why?
@@ -42,7 +42,7 @@ class ModelMetaclass(type):
         attrs['__fields__'] = fields # 除主键外的属性名
         # 构造默认的SELECT, INSERT, UPDATE和DELETE语句:
         attrs['__select__'] = 'select `%s`, %s from `%s`' % (primaryKey, ', '.join(escaped_fields), tableName)#  "x"join()用x来分割对象
-        attrs['__insert__'] = 'insert into `%s` (%s, `%s`) values (%s)' % (tableName, ', '.join(escaped_fields), primaryKey, create_args_string(len(escaped_fields) + 1))
+        attrs['__insert__'] = 'insert into `%s` (%s, `%s`) values (%s)' % (tableName, ', '.join(escaped_fields), primaryKey, db.creat_args_string(len(escaped_fields) + 1))
         attrs['__update__'] = 'update `%s` set %s where `%s`=?' % (tableName, ', '.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
         attrs['__delete__'] = 'delete from `%s` where `%s`=?' % (tableName, primaryKey)
         return type.__new__(cls, name, bases, attrs)  
