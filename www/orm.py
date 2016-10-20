@@ -86,22 +86,22 @@ class Model(dict,metaclass=ModelMetaclass):
         return cls(**[0])
 
     async def save(self):
-        args = list(map(slef.getValueOrDefault,self.__fields__))
+        args = list(map(self.getValueOrDefault,self.__fields__))
         args.append(self.getValueOrDefault(self.__primary_key__))
-        rows = await execute(self.__insert__,args)
+        rows = await db.execute(self.__insert__,args)
         if rows != 1:
             logging.warn('faild to insert record: affected rows:%s'%rows)
 
     async def update(self):
         args = list(map(self.getValue,self.__fields__))
         args.append(self.getValue(self.__primary_key__))
-        rows = await execute(self.__update__,args)
+        rows = await db.execute(self.__update__,args)
         if rows !=1:
             logging.warn('failed to update by primary key :affected rows:%s'%rows)
 
     async def remove(self):
         args = [self.getValue(self.__primary_key__)]
-        rows = await execute(self.__delete__,args)
+        rows = await db.execute(self.__delete__,args)
         if rows!=1:
             logging.warn("failed to remove by primary key :affected rows:%s"%rows)
 

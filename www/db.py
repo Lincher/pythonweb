@@ -48,7 +48,7 @@ def execute(sql,args):
     with(yield from __pool)as conn:
         try:
             cur = yield from conn.cursor()
-            yield from cur.execute(sql.replace("?"),args)
+            yield from cur.execute(sql.replace("?",'%s'),args)
             affected =cur.rowcount
             yield from  cur.close()
         except BaseException as e:

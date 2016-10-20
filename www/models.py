@@ -14,7 +14,7 @@ class User(Model):
     admin = BooleanField()
     name = StringField(column_type="varchar(50)")
     image=  StringField(column_type="varchar(50)")
-    creat_at = FloatField(default=time.time)
+    created_at = FloatField(default=time.time)
 
 class Blog(Model):
     __table__ = 'blogs'
