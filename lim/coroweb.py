@@ -157,12 +157,12 @@ def add_routes(app, module_name):
     else:
         name = module_name[n+1:] # 名字是 aname.bname 点之后的部分
         mod = getattr(__import__(module_name[:n], globals(), locals(), [name]), name)# 添加模块 aname.bname
-    for attr in dir(mod):
-        if attr.startswith('_'):
-            continue
-        fn = getattr(mod, attr)
-        if callable(fn):
-            method = getattr(fn, '__method__', None)
+    for attr in dir(mod): #将模块中的所有属性（方法也是属性）按照 list输出
+        if attr.startswith('_'): #如果 attr以 _ 开始
+            continue # 开始下一次循环(因为这是私有属性)
+        fn = getattr(mod, attr)  # 获得 指针（可能是方法也可能是属性）
+        if callable(fn):    # 如果 能call
+            method = getattr(fn, '__method__', None) # 获得 fn的 __method__
             path = getattr(fn, '__route__', None)
-            if method and path:
-                add_route(app, fn)
+            if method and path:         #如果都不为空
+                add_route(app, fn)  #把这个 这个 fn添加到app中

@@ -12,3 +12,12 @@ module_name = 'aname.bbname'
 n  =  module_name.rfind('a')
 name = module_name[n+1:]
 print(name)
+
+class a(object):
+
+    def fuck():
+        pass
+
+    __demo__ = None
+
+print(dir(a))
