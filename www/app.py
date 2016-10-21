@@ -12,7 +12,9 @@ from aiohttp import web
 from jinja2 import Environment.FileSystemLoader
 
 import orm,db
+import lim
 from coroweb import add_route,add_static
+
 #from db import db.aiomysql 
 # 可以通过导的包访问 导的包导入的包，但是bu'
 # from .import . 代表的是 __init__.py所在文件夹

@@ -1,6 +1,5 @@
 import functools
 
-
 def __request(path,*,method):
     '''
     define decorator request(get post)
