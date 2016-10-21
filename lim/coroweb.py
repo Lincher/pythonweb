@@ -151,8 +151,8 @@ def add_route(app, fn):
     app.router.add_route(method, path, RequestHandler(app, fn))
 
 def add_routes(app, module_name):
-    n = module_name.rfind('.')
-    if n == (-1):
+    n = module_name.rfind('.')#从后往前 找‘.’
+    if n == (-1):#找不到
         mod = __import__(module_name, globals(), locals())
     else:
         name = module_name[n+1:]

@@ -8,12 +8,18 @@ import functools.partial
 from datetime import datetime
 
 import asyncio, os, json, time,inspect
+import jinja2
+'''
+Jinja2 is a template engine written in pure Python.  It provides a
+    Django inspired non-XML syntax but supports inline expressions and
+    an optional sandboxed environment.
+'''
 from aiohttp import web
-from jinja2 import Environment.FileSystemLoader
+# from jinja2 import Environment.FileSystemLoader
 
 import orm,db
 import lim
-from coroweb import add_route,add_static
+# from coroweb import add_route,add_static
 
 #from db import db.aiomysql 
 # 可以通过导的包访问 导的包导入的包，但是bu'
@@ -38,17 +44,18 @@ def init_jinja2(app,**kw):
     
     path =kw.get('path',None)
     if path is None:
+        # 如果url路径为空，把路径改为templataes 目录
         path =os.path.join(os.path.dirname(os.path.abspath(__file__)),'templates')
     logging.info('set jinja2 templates path:%s' %path)
-    env = Environment(loader=FileSystemLoader(path),**options)
+    # 这个环境对象很关键
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(path),**options)
     filters = ke.get('filters',None)
     if filters is not  None:
         for name ,f  in filters.items():
             env.filters[name] = f
+    # app 类属性
     app['__templating__'] = env
     
-    
-
 
 class RequestHandler(object):
 
@@ -144,8 +151,8 @@ def init(loop):
     app = web.Application(loop=loop,middlewares=[logger_factory,responser_factory,data_factory])
     init_jinja2(app,filters=dict(datetime=datetime_filter))
     # app.router.add_route('GET', '/', index)
-    add_routes(app,'handlers')
-    add_static(app)
+    lim.coroweb.add_routes(app,'handlers')
+    lim.coroweb.add_static(app)
     srv = yield from loop.create_server(app.make_handler(), '127.0.0.1', 9000)
     logging.info('server started at http://127.0.0.1:9000...')
     return srv
