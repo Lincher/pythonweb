@@ -6,3 +6,9 @@ def change(d):
 
 change(d)
 print(str(d))
+
+module_name = 'aname.bbname'
+
+n  =  module_name.rfind('a')
+name = module_name[n+1:]
+print(name)

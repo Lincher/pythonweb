@@ -152,11 +152,11 @@ def add_route(app, fn):
 
 def add_routes(app, module_name):
     n = module_name.rfind('.')#从后往前 找‘.’
-    if n == (-1):#找不到
-        mod = __import__(module_name, globals(), locals())
+    if n == (-1):#找不到'.'
+        mod = __import__(module_name, globals(), locals())# 添加模块 module_name
     else:
-        name = module_name[n+1:]
-        mod = getattr(__import__(module_name[:n], globals(), locals(), [name]), name)
+        name = module_name[n+1:] # 名字是 aname.bname 点之后的部分
+        mod = getattr(__import__(module_name[:n], globals(), locals(), [name]), name)# 添加模块 aname.bname
     for attr in dir(mod):
         if attr.startswith('_'):
             continue
