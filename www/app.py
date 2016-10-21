@@ -11,8 +11,11 @@ import asyncio, os, json, time,inspect
 from aiohttp import web
 from jinja2 import Environment.FileSystemLoader
 
-import orm
+import orm,db
 from coroweb import add_route,add_static
+#from db import db.aiomysql 
+# 可以通过导的包访问 导的包导入的包，但是bu'
+# from .import . 代表的是 __init__.py所在文件夹
 
 def init_jinja2(app,**kw):
     logging.info('init jinja2...')
@@ -43,21 +46,7 @@ def init_jinja2(app,**kw):
     app['__templating__'] = env
     
     
-def __request(path,*,method):
-    '''
-    define decorator request(get post)
-    '''
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*a,*k):
-            return func(*a,**k)
-        wrapper.__method__ = method
-        wrapper.__route__ = path
-        return wrapper
-    return decorator
 
-get = functools.partial(__request,method = 'GET')
-post = functools.partial(__request,method = 'POST')
 
 class RequestHandler(object):
 
@@ -75,7 +64,6 @@ class RequestHandler(object):
 def logger_factory(app,handler):
     @asyncio.coroutine
     def logger(request):
-        #jilu zizhi
         logging.info('request:%s %s'%(request.method,request.path))
 
         return (yield from handler(request))
@@ -88,6 +76,11 @@ async def data_factory(app,handler):
                 request.__data__ = await request.json()
                 logging.info('requset json:%s'% str(requset.__data__))
             elif request.content_type.startswith('application/x-www-from-urlencoded'):
+                request.__data__ =await request.post()
+                logging.info('request frion : %s'% str(request.__data__))
+        return (await handler(request))
+    return parse_data
+
 @asyncio.coroutine
 def response_factory(app,handler):
     @asyncio.coroutine
@@ -125,12 +118,28 @@ def response_factory(app,handler):
         return resp
     return response
 
+def datatime_filter(t);
+    delta = int(time.time() - t)
+    if delta < 60:
+        return u'1分钟前'
+    if delta < 3600:
+        return u'%s分钟前' % (delta // 60)
+    if delta < 86400:
+        return u'%s小时前' % (delta // 3600)
+    if delta < 604800:
+        return u'%s天前' % (delta // 86400)
+    dt = datetime.fromtimestamp(t)
+    return u'%s年%s月%s日' % (dt.year, dt.month, dt.day)
+
 def index(request):
     return web.Response(body=b'<h1>Awesome</h1>')
 
 @asyncio.coroutine
 def init(loop):
-    app = web.Application(loop=loop,middlewares=[logger_factory,responser_factory])
+    yield from db.creat_pool(loop=loop,host='127.0.0.1',port=3306,user='wwww',password='www',db='awesome')
+    # 获取数据库连接池 
+    # 获取web应用,中间件用来绑定请求和请求处理
+    app = web.Application(loop=loop,middlewares=[logger_factory,responser_factory,data_factory])
     init_jinja2(app,filters=dict(datetime=datetime_filter))
     # app.router.add_route('GET', '/', index)
     add_routes(app,'handlers')
