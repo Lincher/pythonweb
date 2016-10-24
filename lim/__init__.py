@@ -1,3 +1,3 @@
 __all__ = {'request_decorator','coroweb'}
-import request_decorator
-import coroweb
+
+from . import coroweb,request_decorator
