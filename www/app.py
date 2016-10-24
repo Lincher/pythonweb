@@ -136,7 +136,7 @@ def index(request):
 
 @asyncio.coroutine
 def init(loop):
-    yield from db.creat_pool(loop=loop,host='127.0.0.1',port=3306,user='wwww',password='www',db='awesome')
+    yield from db.creat_pool(loop=loop,host='127.0.0.1',port=3306,user='wwww-data',password='www-data',db='awesome')
     # 获取数据库连接池 
     # 获取web应用对象,中间件用来绑定请求和请求处理
     app = web.Application(loop=loop,middlewares=[logger_factory,response_factory,data_factory])

@@ -13,5 +13,5 @@ def __request(path,*,method):
         return wrapper
     return decorator
 
-get = functools.partial(__request,method = 'GET')
-post = functools.partial(__request,method = 'POST')
+# get = functools.partial(__request,method = 'GET')
+# post = functools.partial(__request,method = 'POST')
