@@ -18,8 +18,7 @@ class ModelMetaclass(type):
 
         mappings = dict()#空字典
         fields= [] #空 list
-        primaryKey =None
-# attrs里面存储了 许多参数 这里的 attrs 就是后面定义类的时候 类的属性
+        primaryKey = None
         for k,v in attrs.items():
             if isinstance(v,field.Field):
                 logging.info('found mapping: %s==>%s'%(k,v))
