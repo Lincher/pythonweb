@@ -1,4 +1,4 @@
-import request_decorator
 import coroweb
+import request_decorator
 
 __all__ = {'request_decorator','coroweb'}
