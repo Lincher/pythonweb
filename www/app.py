@@ -133,14 +133,15 @@ def datatime_filter(t):
 def index(request):
     return web.Response(body=b'<h1>Awesome</h1>')
 
+
 @asyncio.coroutine
 def init(loop):
-    # yield from db.creat_pool(loop=loop,host='127.0.0.1',port=3306,user='wwww',password='www',db='awesome')
+    yield from db.creat_pool(loop=loop,host='127.0.0.1',port=3306,user='wwww',password='www',db='awesome')
     # 获取数据库连接池 
-    # 获取web应用,中间件用来绑定请求和请求处理
+    # 获取web应用对象,中间件用来绑定请求和请求处理
     app = web.Application(loop=loop,middlewares=[logger_factory,response_factory,data_factory])
     init_jinja2(app,filters=dict(datetime=datatime_filter))
-    app.router.add_route('GET', '/', index)
+    # app.router.add_route('GET', '/', index)
     lim.coroweb.add_routes(app,'handlers')
     lim.coroweb.add_static(app)
     srv = yield from loop.create_server(app.make_handler(), '127.0.0.1', 9000)
