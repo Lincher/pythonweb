@@ -3,8 +3,12 @@ __author__ ='Lincher'
 import db,field,logging
 
 #魔术类，元数据类，创造类的类
+#>>> Foo = type('Foo', (父类), {'bar':True})
 class ModelMetaclass(type):
-
+    #  类成员函数的第一个 都是this指针，当然名字你自己随便起，元类一般用cls
+    '''
+    __new__ 函数的参数 （this,furture_class_name,,furture_class_parent,furture_class_attribute）
+    '''
     def __new__(cls,name,bases,attrs):
         if name=='Model':
             return type.__new__(cls, name, bases, attrs)
@@ -50,15 +54,17 @@ class ModelMetaclass(type):
 
 
 class Model(dict,metaclass=ModelMetaclass):
+    __table__ = 'Model'
 
     def __init__(self,**kw):
-        super(Model,self).__init__(**kw)
+        super().__init__(**kw)
+        # super 把 self指针转换到 Model的父类 
     
     def __getattr__(self,key):
         try:
             return self[key]
         except KeyError:
-            raise AttributeError(r"'Model' object has no attribute '%s'"%key)
+            raise AttributeError(r"'%s' object has no attribute '%s'"%(self.__table__,key))
     
     def __setattr__(self,key,value):
         self[key] = value
