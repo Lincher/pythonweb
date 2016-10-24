@@ -49,7 +49,7 @@ def init_jinja2(app,**kw):
     logging.info('set jinja2 templates path:%s' %path)
     # 这个环境对象很关键
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(path),**options)
-    filters = ke.get('filters',None)
+    filters = kw.get('filters',None)
     if filters is not  None:
         for name ,f  in filters.items():
             env.filters[name] = f
@@ -133,11 +133,11 @@ def index(request):
 
 @asyncio.coroutine
 def init(loop):
-    yield from db.creat_pool(loop=loop,host='127.0.0.1',port=3306,user='wwww',password='www',db='awesome')
+    # yield from db.creat_pool(loop=loop,host='127.0.0.1',port=3306,user='wwww',password='www',db='awesome')
     # 获取数据库连接池 
     # 获取web应用,中间件用来绑定请求和请求处理
-    app = web.Application(loop=loop,middlewares=[logger_factory,responser_factory,data_factory])
-    init_jinja2(app,filters=dict(datetime=datetime_filter))
+    app = web.Application(loop=loop,middlewares=[logger_factory,response_factory,data_factory])
+    init_jinja2(app,filters=dict(datetime=datatime_filter))
     app.router.add_route('GET', '/', index)
     lim.coroweb.add_routes(app,'handlers')
     lim.coroweb.add_static(app)
