@@ -4,7 +4,7 @@ async web application
 
 import logging; 
 logging.basicConfig(level=logging.INFO)
-import functools.partial
+from functools import partial
 from datetime import datetime
 
 import asyncio, os, json, time,inspect
@@ -18,8 +18,8 @@ from aiohttp import web
 # from jinja2 import Environment.FileSystemLoader
 
 import orm,db
-import lim
-# from coroweb import add_route,add_static
+
+import coroweb
 
 #from db import db.aiomysql 
 # 可以通过导的包访问 导的包导入的包，但是bu'
@@ -56,18 +56,6 @@ def init_jinja2(app,**kw):
     # app 类属性
     app['__templating__'] = env
     
-
-class RequestHandler(object):
-
-    def __init__(self,app,fn):
-        self._app =app
-        self._func=fn
-
-    @asyncio.coroutine
-    def __call__(self,request): #定义了这个方法，对象可以像函数一样调用
-        kw = ...abs
-        r = yield from self._func(**kw)
-        return r
 
 @asyncio.coroutine
 def logger_factory(app,handler):
@@ -127,7 +115,7 @@ def response_factory(app,handler):
         return resp
     return response
 
-def datatime_filter(t);
+def datatime_filter(t):
     delta = int(time.time() - t)
     if delta < 60:
         return u'1分钟前'
@@ -150,7 +138,7 @@ def init(loop):
     # 获取web应用,中间件用来绑定请求和请求处理
     app = web.Application(loop=loop,middlewares=[logger_factory,responser_factory,data_factory])
     init_jinja2(app,filters=dict(datetime=datetime_filter))
-    # app.router.add_route('GET', '/', index)
+    app.router.add_route('GET', '/', index)
     lim.coroweb.add_routes(app,'handlers')
     lim.coroweb.add_static(app)
     srv = yield from loop.create_server(app.make_handler(), '127.0.0.1', 9000)

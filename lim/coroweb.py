@@ -72,6 +72,16 @@ def has_request_arg(fn):
             raise ValueError('request parameter must be the last named parameter in function: %s%s' % (fn.__name__, str(sig)))
     return found
 
+'''
+我遇到的第二个难点就是RequestHandler，因为RequestHandler看起来是一个类，但又不是一个类，从本质上来说，它是一个函数，那问题来了，这个函数的作用到底是什么呢？
+如果大家有仔细看day2的hello world的例子的话，就会发现在那个index函数里是包含了一个request参数的，但我们新定义的很多函数中，request参数都是可以被省略掉的，那是因为新定义的函数最终都是被RequestHandler处理，自动加上一个request参数，从而符合app.router.add_route第三个参数的要求，所以说RequestHandler起到统一标准化接口的作用。
+接口是统一了，但每个函数要求的参数都是不一样的，那又要如何解决呢？得益于factory的理念，我们很容易找一种解决方案，就如同response_factory一样把任何类型的返回值最后都统一封装成一个web.Response对象。RequestHandler也可以把任何参数都变成self._func(**kw)的形式。那问题来了，那kw的参数到底要去哪里去获取呢？
+request.match_info的参数： match_info主要是保存像@get('/blog/{id}')里面的id，就是路由路径里的参数
+GET的参数： 像例如/?page=2
+POST的参数： api的json或者是网页中from
+request参数： 有时需要验证用户信息就需要获取request里面的数据
+说到这里应该很清楚了吧，RequestHandler的主要作用就是构成标准的app.router.add_route第三个参数，还有就是获取不同的函数的对应的参数，就这两个主要作用。只要你实现了这个作用基本上是随你怎么写都行的，当然最好加上参数验证的功能，否则出错了却找不到出错的消息是一件很头痛的是事情。在这个难点的我没少参考同学的注释，但觉得还是把这部分的代码太过复杂化了，所以我用自己的方式重写了RequestHandler，从老师的先检验再获取转换成先获取再统一验证，从逻辑上应该是没有问题，但大幅度简化了程序。
+'''
 class RequestHandler(object):
 
     def __init__(self, app, fn):
@@ -83,7 +93,7 @@ class RequestHandler(object):
         self._named_kw_args = get_named_kw_args(fn)
         self._required_kw_args = get_required_kw_args(fn)
 
-    async def __call__(self, request):
+    async def __call__(self, request):#定义了这个方法，对象可以像函数一样调用
         kw = None
         if self._has_var_kw_arg or self._has_named_kw_args or self._required_kw_args:
             if request.method == 'POST':
@@ -141,14 +151,15 @@ def add_static(app):
     logging.info('add static %s => %s' % ('/static/', path))
 
 def add_route(app, fn):
-    method = getattr(fn, '__method__', None)
+    method = getattr(fn, '__method__', None)  # 获得 fn的 __method__
     path = getattr(fn, '__route__', None)
-    if path is None or method is None:
+    if path is None or method is None: #如果为空
         raise ValueError('@get or @post not defined in %s.' % str(fn))
-    if not asyncio.iscoroutinefunction(fn) and not inspect.isgeneratorfunction(fn):
-        fn = asyncio.coroutine(fn)
+    if not asyncio.iscoroutinefunction(fn) and not inspect.isgeneratorfunction(fn):#判断函数类型
+        fn = asyncio.coroutine(fn) #手动装饰
     logging.info('add route %s %s => %s(%s)' % (method, path, fn.__name__, ', '.join(inspect.signature(fn).parameters.keys())))
-    app.router.add_route(method, path, RequestHandler(app, fn))
+    app.router.add_route(method, path, RequestHandler(app, fn))#     # app.router.add_route('GET', '/', index)
+
 
 def add_routes(app, module_name):
     n = module_name.rfind('.')#从后往前 找‘.’
@@ -162,7 +173,4 @@ def add_routes(app, module_name):
             continue # 开始下一次循环(因为这是私有属性)
         fn = getattr(mod, attr)  # 获得 指针（可能是方法也可能是属性）
         if callable(fn):    # 如果 能call
-            method = getattr(fn, '__method__', None) # 获得 fn的 __method__
-            path = getattr(fn, '__route__', None)
-            if method and path:         #如果都不为空
-                add_route(app, fn)  #把这个 这个 fn添加到app中
+            add_route(app, fn)  #把这个 这个 fn添加到app中
