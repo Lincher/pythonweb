@@ -32,9 +32,6 @@ class ModelMetaclass(type):
         
         if not primaryKey:#meiyou zhujian 
             raise RuntimeError("Primary key not found")
-        for k in mappings.keys():
-            attrs.pop(k)    #把所有在字典里记录的键pop出来，why?
-            #because this dict is used to creat 属性，而前面已经保存了一次了，所以这里去掉，不然会保存两次
 
         escaped_fields = list(map(lambda f: '`%s`' % f, fields))
         '''map是一个高阶函数,用list()返回一个新的list
@@ -54,7 +51,7 @@ class ModelMetaclass(type):
 
 
 class Model(dict,metaclass=ModelMetaclass):
-    __table__ = 'Model'
+    # __table__ = 'Model'
 
     def __init__(self,**kw):
         super().__init__(**kw)

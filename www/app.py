@@ -2,8 +2,7 @@
 async web application
 '''
 
-import logging; 
-logging.basicConfig(level=logging.INFO)
+
 from functools import partial
 from datetime import datetime
 

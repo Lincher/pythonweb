@@ -1,8 +1,7 @@
+import std
 import models,db
 import asyncio
-import logging
 
-logging.basicConfig(level=logging.INFO)
 
 async def test(loop):
     await db.creat_pool(loop=loop,user='www-data',password='www-data',
