@@ -6,7 +6,7 @@ def next_id():
     return '%015d%s000'%(int(time.time()*1000),uuid.uuid4().hex)
 # uuid.uuid4 random uuid
 class User(Model):
-    # __table__ = 'users'
+    __table__ = 'users'
 
     id = StringField(primary_key=True,default=next_id,column_type='varchar(50)')
     email =StringField(column_type="varchar(50)")

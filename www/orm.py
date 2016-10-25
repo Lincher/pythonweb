@@ -8,6 +8,7 @@ class ModelMetaclass(type):
     #  类成员函数的第一个 都是this指针，当然名字你自己随便起，元类一般用cls
     '''
     __new__ 函数的参数 （this,furture_class_name,,furture_class_parent,furture_class_attribute）
+    furture_class_attribute 是类的属性而不是实例属性，现在在 new阶段还没有 init
     '''
     def __new__(cls,name,bases,attrs):
         if name=='Model':
@@ -30,6 +31,9 @@ class ModelMetaclass(type):
                 else:
                     fields.append(k) #如果不是主键 就这个键添加到 列表中
         
+        for k in mappings.keys(): # 从属性列表中去掉 字段名到字段类的映射
+            attrs.pop(k)
+
         if not primaryKey:#meiyou zhujian 
             raise RuntimeError("Primary key not found")
 
@@ -56,24 +60,27 @@ class Model(dict,metaclass=ModelMetaclass):
     def __init__(self,**kw):
         super().__init__(**kw)
         # super 把 self指针转换到 Model的父类 
-    
-    def __getattr__(self,key):
-        try:
-            return self[key]
-        except KeyError:
-            raise AttributeError(r"'%s' object has no attribute '%s'"%(self.__table__,key))
+
+    #卧槽，千万不要重写这个方法，重写了 getattr 就会默认调用 __getattr__
+    # def __getattr__(self,key):
+    #     try:
+    #         return self[key]
+    #     except KeyError:
+    #         raise AttributeError(r"'%s' object has no attribute '%s'"%(self.__table__,key))
     
     def __setattr__(self,key,value):
         self[key] = value
     
-    def getValue(self,key):
-        return getattr(self,key,None)
-
     def getValueOrDefault(self,key): #获取某个字段的值，如果没有就是用默认值
-        value = getattr(self,key,None) #相当于 self.__getattr__()
+        value = getattr(self,key,None) 
         
         if value is None:
-            field = self.__mappings__[key]
+            try:
+                field = self.__mappings__[key]
+            except KeyError:
+                logging.ERROR("'%s' object has no attribute '%s'"%(self.__class__.__name__,key))
+                raise
+
             if field.default is not None:
                 value = field.default() if callable(field.default) else field.default
                 logging.debug('using default value for %s:%s'% (key,str(value)))

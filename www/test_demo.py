@@ -21,3 +21,19 @@ class a(object):
     __demo__ = None
 
 print(dir(a))
+
+
+class B(dict):
+
+    a = "这是类属性"
+    def __init__(self,a):
+        self.a = a
+    def __getattr__(self,key):
+        try:
+            return self[key]
+        except KeyError:
+            raise AttributeError(r"object has no attribute")
+
+b = B('这是实例属性')
+print(B.a)
+print(b.a)
