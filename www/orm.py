@@ -61,18 +61,19 @@ class Model(dict,metaclass=ModelMetaclass):
         super().__init__(**kw)
         # super 把 self指针转换到 Model的父类 
 
-    #卧槽，千万不要重写这个方法，重写了 getattr 就会默认调用 __getattr__
-    # def __getattr__(self,key):
-    #     try:
-    #         return self[key]
-    #     except KeyError:
-    #         raise AttributeError(r"'%s' object has no attribute '%s'"%(self.__table__,key))
+    def __getattr__(self,key):
+        try:
+            return self[key]
+        except KeyError:
+            # raise AttributeError(r"'%s' object has no attribute '%s'"%(self.__table__,key))
+            # 没事抛你大爷的异常
+            self.key = None 
     
     def __setattr__(self,key,value):
         self[key] = value
     
     def getValueOrDefault(self,key): #获取某个字段的值，如果没有就是用默认值
-        value = getattr(self,key,None) 
+        value = getattr(self,key,None)
         
         if value is None:
             try:
