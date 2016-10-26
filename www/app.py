@@ -20,6 +20,7 @@ import orm,db
 import sys,os
 # print(os.path.dirname(os.path.realpath(__file__))+'\..\\')  #当前文件所在的目录
 sys.path.append(os.path.dirname(os.path.realpath(__file__))+'\..\\')  #添加到模块搜索路径中
+# sys.path.append(os.path.dirname(os.path.realpath(__file__))+'\..\\lim')  #添加到模块搜索路径中
 import lim
 
 #from db import db.aiomysql 
