@@ -150,3 +150,4 @@ def add_routes(app, module_name):
         fn = getattr(mod, attr)  # 获得 指针（可能是方法也可能是属性）
         if callable(fn):    # 如果 能call
             add_route(app, fn)  #把这个 这个 fn添加到app中
+

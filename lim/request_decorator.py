@@ -42,3 +42,15 @@ def post(path):
         wrapper.__route__ = path
         return wrapper
     return decorator
+
+
+# # unit test
+# @get('/hah')
+# def hello():
+#     print('hello')
+
+# u  = hello
+
+# method = getattr(u,'__method__',None)
+# path = getattr(u,"__route__",None)
+# print(method,path)
