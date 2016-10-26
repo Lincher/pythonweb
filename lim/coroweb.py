@@ -4,7 +4,10 @@ from urllib import parse
 
 from aiohttp import web
 
-import apis
+try:
+    import apis
+except ImportError:
+    from . import apis
 
 # from apis import ValueError
 

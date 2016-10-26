@@ -1,7 +1,7 @@
 try:
-    import coroweb  # Will also be exported.
-except SystemError:
     from . import coroweb
+except SystemError:
+    import coroweb  # Will also be exported.
 
 __all__ = {'coroweb'}
 
