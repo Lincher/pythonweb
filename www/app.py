@@ -2,10 +2,10 @@
 async web application
 '''
 
-
+import std
 from functools import partial
 from datetime import datetime
-
+import logging
 import asyncio, os, json, time,inspect
 import jinja2
 '''
@@ -18,7 +18,7 @@ from aiohttp import web
 
 import orm,db
 import sys,os
-print(os.path.dirname(os.path.realpath(__file__))+'\..\\')  #当前文件所在的目录
+# print(os.path.dirname(os.path.realpath(__file__))+'\..\\')  #当前文件所在的目录
 sys.path.append(os.path.dirname(os.path.realpath(__file__))+'\..\\')  #添加到模块搜索路径中
 import lim
 
@@ -26,8 +26,10 @@ import lim
 # 可以通过导的包访问 导的包导入的包，但是bu'
 # from .import . 代表的是 __init__.py所在文件夹
 
+
 def init_jinja2(app,**kw):
     logging.info('init jinja2...')
+    
 
     def dict_inital(d):
         for key in d.keys():
@@ -46,6 +48,11 @@ def init_jinja2(app,**kw):
     path =kw.get('path',None)
     if path is None:
         # 如果url路径为空，把路径改为templataes 目录
+        '''
+            os.path.abspath(__file__) 获得当前的绝对路径
+            os.path.dirname 获得当前文件的文件夹
+            os.path.join 路径拼接
+        '''
         path =os.path.join(os.path.dirname(os.path.abspath(__file__)),'templates')
     logging.info('set jinja2 templates path:%s' %path)
     # 这个环境对象很关键
@@ -56,7 +63,11 @@ def init_jinja2(app,**kw):
             env.filters[name] = f
     # app 类属性
     app['__templating__'] = env
-    
+'''
+# middleware 中间件的函数 参数(服务器端的web对象，客户端的request对象)
+返回值：另一个函数 
+
+'''    
 
 @asyncio.coroutine
 def logger_factory(app,handler):
@@ -135,7 +146,8 @@ def index(request):
 
 @asyncio.coroutine
 def init(loop):
-    yield from db.creat_pool(loop=loop,host='127.0.0.1',port=3306,user='wwww-data',password='www-data',db='awesome')
+    yield from db.creat_pool(loop=loop,host='127.0.0.1',port=3306,user='www-data',password='www-data',db='awesome')
+    
     # 获取数据库连接池 
     # 获取web应用对象,中间件用来绑定请求和请求处理
     app = web.Application(loop=loop,middlewares=[logger_factory,response_factory,data_factory])

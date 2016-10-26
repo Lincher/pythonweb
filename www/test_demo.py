@@ -37,3 +37,9 @@ class B(dict):
 b = B('这是实例属性')
 print(B.a)
 print(b.a)
+
+import os
+print(os)
+
+print(os.path)
+print(os.path.abspath('hahha'))
