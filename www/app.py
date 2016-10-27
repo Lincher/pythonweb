@@ -152,6 +152,7 @@ def init(loop):
     app = web.Application(loop=loop,middlewares=[logger_factory,response_factory,data_factory])
     init_jinja2(app,filters=dict(datetime=datatime_filter))
     # app.router.add_route('GET', '/', index)
+    # help(app.router.add_route)
     lim.coroweb.add_routes(app,'handlers')
     lim.coroweb.add_static(app)
     srv = yield from loop.create_server(app.make_handler(), '127.0.0.1', 9000)

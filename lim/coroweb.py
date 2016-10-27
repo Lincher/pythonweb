@@ -5,19 +5,20 @@ from urllib import parse
 from aiohttp import web
 
 try:
-    from apis import APIError
+    from apis import APIError   
 except ImportError:
     from .apis import APIError
 
-def get_required_kw_args(fn):
+def get_required_kw_args(fn):   # demo(a,*,b,c=0) 返回 (b)
     args = []
     params = inspect.signature(fn).parameters
-    for name, param in params.items():
+    for name, param in params.items(): # KEYWORD_ONLY 表示只能接受关键字传参的参数
         if param.kind == inspect.Parameter.KEYWORD_ONLY and param.default == inspect.Parameter.empty:
             args.append(name)
     return tuple(args)
 
-def get_named_kw_args(fn):
+
+def get_named_kw_args(fn):     # demo(a,*,b,c=0) 返回 (b,c)
     args = []
     params = inspect.signature(fn).parameters
     for name, param in params.items():
@@ -152,4 +153,5 @@ def add_routes(app, module_name):
         fn = getattr(mod, attr)  # 获得 指针（可能是方法也可能是属性）
         if callable(fn):    # 如果 能call
             add_route(app, fn)  #把这个 这个 fn添加到app中
+
 
