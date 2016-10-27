@@ -65,9 +65,7 @@ def init_jinja2(app,**kw):
     # app 类属性
     app['__templating__'] = env
 '''
-# middleware 中间件的函数 参数(服务器端的web对象，客户端的request对象)
-返回值：另一个函数 
-
+# middleware 回调函数 参数(服务器端的web对象，请求处理函数)
 '''    
 
 @asyncio.coroutine

@@ -5,11 +5,9 @@ from urllib import parse
 from aiohttp import web
 
 try:
-    import apis
+    from apis import APIError
 except ImportError:
-    from . import apis
-
-# from apis import ValueError
+    from .apis import APIError
 
 def get_required_kw_args(fn):
     args = []
@@ -125,7 +123,7 @@ class RequestHandler(object):
             return dict(error=e.error, data=e.data, message=e.message)
 
 def add_static(app):
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'www\static')
     app.router.add_static('/static/', path)
     logging.info('add static %s => %s' % ('/static/', path))
 
@@ -147,7 +145,8 @@ def add_routes(app, module_name):
     else:
         name = module_name[n+1:] # 名字是 aname.bname 点之后的部分
         mod = getattr(__import__(module_name[:n], globals(), locals(), [name]), name)# 添加模块 aname.bname
-    for attr in dir(mod): #将模块中的所有属性（方法也是属性）按照 list输出
+    for attr in mod.__all__: #将模块中的所有属性（方法也是属性）按照 list输出
+    #  这个dir 方法副作用太大，引入 导包的名字，所以建议 使用__all__属性，并手动写一下
         if attr.startswith('_'): #如果 attr以 _ 开始
             continue # 开始下一次循环(因为这是私有属性)
         fn = getattr(mod, attr)  # 获得 指针（可能是方法也可能是属性）

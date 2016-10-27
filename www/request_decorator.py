@@ -21,6 +21,7 @@ def get(path):
     '''
     Define decorator @get('/path')
     '''
+
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kw):
@@ -30,10 +31,12 @@ def get(path):
         return wrapper
     return decorator
 
+
 def post(path):
     '''
     Define decorator @post('/path')
     '''
+    
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kw):
@@ -43,14 +46,34 @@ def post(path):
         return wrapper
     return decorator
 
+    '''
+    Define decorator @post('/path')
+    '''
+    
+
+
+
 
 # # unit test
 # @get('/hah')
 # def hello():
 #     print('hello')
 
-# u  = hello
-
+# u = hello
 # method = getattr(u,'__method__',None)
 # path = getattr(u,"__route__",None)
 # print(method,path)
+
+# def decorator(func):
+#     @functools.wraps(func)
+#     def wrapper(*args, **kw):
+#         return func(*args, **kw)
+#     return wrapper
+
+# @get('/')
+# def A_get():
+#     pass
+
+# @decorator
+# def B_de():
+#     pass
