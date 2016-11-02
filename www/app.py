@@ -22,7 +22,7 @@ import sys,os
 sys.path.append(os.path.dirname(os.path.realpath(__file__))+'\..\\')  #添加到模块搜索路径中
 # sys.path.append(os.path.dirname(os.path.realpath(__file__))+'\..\\lim')  #添加到模块搜索路径中
 import lim
-
+import config
 #from db import db.aiomysql 
 # 可以通过导的包访问 导的包导入的包，但是bu'
 # from .import . 代表的是 __init__.py所在文件夹
@@ -73,7 +73,7 @@ def logger_factory(app,handler):
     @asyncio.coroutine
     def logger(request):
         logging.info('request:%s %s'%(request.method,request.path))
-
+        logging.info('handler: %s'%(handler.__name__))
         return (yield from handler(request))
     return logger
 
@@ -145,7 +145,7 @@ def index(request):
 
 @asyncio.coroutine
 def init(loop):
-    yield from db.creat_pool(loop=loop,host='127.0.0.1',port=3306,user='www-data',password='www-data',db='awesome')
+    yield from db.creat_pool(loop=loop,**config.config_default.configs)
     
     # 获取数据库连接池 
     # 获取web应用对象,中间件用来绑定请求和请求处理
