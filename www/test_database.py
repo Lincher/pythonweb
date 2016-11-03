@@ -7,8 +7,9 @@ async def test(loop):
     await db.creat_pool(loop=loop,user='www-data',password='www-data',
     db='awesome')
 
-    u = models.User(name='Test',email='test@example.com',
-    passwd='1234567890',image='about:blank')
+    # u = models.User(name='Test',email='test@example.com',
+    # passwd='1234567890',image='about:blank')
+    models.User.findAll()
 
     await u.save()
 

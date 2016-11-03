@@ -47,3 +47,7 @@
 # import handlers
 # for attr in handlers.__all__:
 #     print(attr)
+
+class test():
+    def a():
+        pass

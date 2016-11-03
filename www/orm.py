@@ -46,6 +46,7 @@ class ModelMetaclass(type):
         attrs['__fields__'] = fields # 除主键外的属性名
         # 构造默认的SELECT, INSERT, UPDATE和DELETE语句:
         attrs['__select__'] = 'select `%s`, %s from `%s`' % (primaryKey, ', '.join(escaped_fields), tableName)#  "x"join()用x来分割对象
+        attrs['__select_all__'] = 'select * from `%s`' % tableName
         attrs['__insert__'] = 'insert into `%s` (%s, `%s`) values (%s)' % (tableName, ', '.join(escaped_fields), primaryKey, db.creat_args_string(len(escaped_fields) + 1))
         attrs['__update__'] = 'update `%s` set %s where `%s`=?' % (tableName, ', '.join(map(lambda f: '`%s`=?' % (mappings.get(f).name or f), fields)), primaryKey)
         attrs['__delete__'] = 'delete from `%s` where `%s`=?' % (tableName, primaryKey)
@@ -88,14 +89,29 @@ class Model(dict,metaclass=ModelMetaclass):
                 setattr(self,key,value)
         return value
 
+# '''
+# 既然@staticmethod和@classmethod都可以直接类名.方法名()来调用，那他们有什么区别呢
+# 从它们的使用上来看,
+# @staticmethod不需要表示自身对象的self和自身类的cls参数，就跟使用函数一样。
+# @classmethod也不需要self参数，但第一个参数需要是表示自身类的cls参数。
+# '''
+# 使用在类中使用多行注释会引起错误的缩进bug?????????
     @classmethod
     async def find(cls,pk):
         "find object by primary key."
-        rs = await select('%s where `%s`=?'%(cls.__select__,cls.__primary_key__),
+        rs = await db.select('%s where `%s`=?'%(cls.__select__,cls.__primary_key__),
         [pk],1)
         if len(rs) == 0:
             return None
         return cls(**[0])
+    
+    @classmethod
+    async def findAll(cls):
+        'find all'
+        rows = await db.select(cls.__select_all__)
+        if rows =={}:
+            logging.info('found nothing in this table')
+        return [cls(**r) for r in rows]  #返回一个table对象
 
     async def save(self):
         args = list(map(self.getValueOrDefault,self.__fields__))
@@ -103,6 +119,7 @@ class Model(dict,metaclass=ModelMetaclass):
         rows = await db.execute(self.__insert__,args)
         if rows != 1:
             logging.warn('faild to insert record: affected rows:%s'%rows)
+        
 
     async def update(self):
         args = list(map(self.getValue,self.__fields__))
@@ -117,9 +134,8 @@ class Model(dict,metaclass=ModelMetaclass):
         if rows!=1:
             logging.warn("failed to remove by primary key :affected rows:%s"%rows)
 
-    @classmethod
-    async def findAll(parameter_list):
-        pass
+
+
 
         
 

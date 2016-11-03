@@ -100,7 +100,7 @@ def response_factory(app,handler):
             resp = web.Response(body=r)
             resp.content_type ='application/octet-steam'
             return resp
-        if isinstance(r.str):
+        if isinstance(r,str):
             resp = web.Response(body=r.encode('utf-8'))
             resp.content_type = 'text/html:charset=utf-8'
             return resp
