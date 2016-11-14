@@ -16,7 +16,7 @@ def jinja2_handlers(request):
 
 # ValueError, request parameter must be the last named parameter in function: test(request, a, *b)
 @post('/test')
-def test(a,request):
+async def test(a,request):
     logging.info('request:%s %s'%(request.method,request.path))
     users = await models.User.findAll() 
     return {
@@ -25,7 +25,7 @@ def test(a,request):
     }
 
 @get('/')
-async def index(request):
+def index(request):
     summary=' Lorem ipsum dolor sit amet ,consectetur adipissicing elit,sed do\
     eisusmod tempor incididunt ut labore at dolore magna aliqua.'
     blogs =[
