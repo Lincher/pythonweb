@@ -15,17 +15,27 @@ def jinja2_handlers(request):
     return web.Response(body=b'<h1>jinja2-Awesome</h1>,content_type="text/html",charset="UTF-8"')
 
 # ValueError, request parameter must be the last named parameter in function: test(request, a, *b)
-@post('/')
+@post('/test')
 def test(a,request):
-    return 'hahah'
-
-@get('/')
-async def index(request):
     logging.info('request:%s %s'%(request.method,request.path))
     users = await models.User.findAll() 
     return {
         '__template__': 'test.html',
         'users': users
+    }
+
+@get('/')
+async def index(request):
+    summary=' Lorem ipsum dolor sit amet ,consectetur adipissicing elit,sed do\
+    eisusmod tempor incididunt ut labore at dolore magna aliqua.'
+    blogs =[
+        Blog(id='1',name='Test Blog',summary=summary,created_at=time.time()-120),Blog(id='2',name='Something New', summary=summary,created_at=time.time(-3600)),
+        Blog(id='3',name='Learn Swift',summary=summary,creat_at=time.time()-7200)
+
+    ]
+    return{
+        '__template__':"blogs.html",
+        'blogs':blogs
     }
 
 '''
