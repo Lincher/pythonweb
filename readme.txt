@@ -17,3 +17,5 @@ ee2f2dabb49ed4e9338d5308b1ee2b1b9863835d
 
 e765275089216d44b33ca8a60feef73721914d11
 4a4dc43827b7d8a945d06c593f410c6c
+
+{"Token":"e20e6e71476b3174f59a00ec7c5f1f330b3c5cb9","Gist":"b56b238363754d7fc656adf1ea82676b","lastUpload":"2016-11-15T03:13:14.798Z","firstTime":true,"autoDownload":false,"autoUpload":false,"allowUpload":true,"lastDownload":null,"Version":238,"showSummary":true,"publicGist":false,"forceDownload":false,"openLinks":true}

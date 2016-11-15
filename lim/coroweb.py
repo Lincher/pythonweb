@@ -1,18 +1,22 @@
-import asyncio, os, inspect, logging, functools
-
+import asyncio
+import functools
+import inspect
+import logging
+import os
 from urllib import parse
 
 from aiohttp import web
 
 try:
-    from apis import APIError   
+    from apis import APIError
 except ImportError:
     from .apis import APIError
+
 
 def get_required_kw_args(fn):   # demo(a,*,b,c=0) 返回 (b)
     args = []
     params = inspect.signature(fn).parameters
-    for name, param in params.items(): # KEYWORD_ONLY 表示只能接受关键字传参的参数
+    for name, param in params.items():  # KEYWORD_ONLY 表示只能接受关键字传参的参数
         if param.kind == inspect.Parameter.KEYWORD_ONLY and param.default == inspect.Parameter.empty:
             args.append(name)
     return tuple(args)
@@ -26,17 +30,20 @@ def get_named_kw_args(fn):     # demo(a,*,b,c=0) 返回 (b,c)
             args.append(name)
     return tuple(args)
 
+
 def has_named_kw_args(fn):
     params = inspect.signature(fn).parameters
     for name, param in params.items():
         if param.kind == inspect.Parameter.KEYWORD_ONLY:
             return True
 
+
 def has_var_kw_arg(fn):
     params = inspect.signature(fn).parameters
     for name, param in params.items():
         if param.kind == inspect.Parameter.VAR_KEYWORD:
             return True
+
 
 def has_request_arg(fn):
     sig = inspect.signature(fn)
@@ -47,7 +54,8 @@ def has_request_arg(fn):
             found = True
             continue
         if found and (param.kind != inspect.Parameter.VAR_POSITIONAL and param.kind != inspect.Parameter.KEYWORD_ONLY and param.kind != inspect.Parameter.VAR_KEYWORD):
-            raise ValueError('request parameter must be the last named parameter in function: %s%s' % (fn.__name__, str(sig)))
+            raise ValueError('request parameter must be the last named parameter in function: %s%s' % (
+                fn.__name__, str(sig)))
     return found
 
 '''
@@ -60,6 +68,8 @@ POST的参数： api的json或者是网页中from
 request参数： 有时需要验证用户信息就需要获取request里面的数据
 说到这里应该很清楚了吧，RequestHandler的主要作用就是构成标准的app.router.add_route第三个参数，还有就是获取不同的函数的对应的参数，就这两个主要作用。只要你实现了这个作用基本上是随你怎么写都行的，当然最好加上参数验证的功能，否则出错了却找不到出错的消息是一件很头痛的是事情。在这个难点的我没少参考同学的注释，但觉得还是把这部分的代码太过复杂化了，所以我用自己的方式重写了RequestHandler，从老师的先检验再获取转换成先获取再统一验证，从逻辑上应该是没有问题，但大幅度简化了程序。
 '''
+
+
 class RequestHandler(object):
 
     def __init__(self, app, fn):
@@ -71,7 +81,7 @@ class RequestHandler(object):
         self._named_kw_args = get_named_kw_args(fn)
         self._required_kw_args = get_required_kw_args(fn)
 
-    async def __call__(self, request):#定义了这个方法，对象可以像函数一样调用
+    async def __call__(self, request):  # 定义了这个方法，对象可以像函数一样调用
         kw = None
         if self._has_var_kw_arg or self._has_named_kw_args or self._required_kw_args:
             if request.method == 'POST':
@@ -107,7 +117,8 @@ class RequestHandler(object):
             # check named arg:
             for k, v in request.match_info.items():
                 if k in kw:
-                    logging.warning('Duplicate arg name in named arg and kw args: %s' % k)
+                    logging.warning(
+                        'Duplicate arg name in named arg and kw args: %s' % k)
                 kw[k] = v
         if self._has_request_arg:
             kw['request'] = request
@@ -123,35 +134,40 @@ class RequestHandler(object):
         except APIError as e:
             return dict(error=e.error, data=e.data, message=e.message)
 
+
 def add_static(app):
-    path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'www\static')
+    path = os.path.join(os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))), 'www\static')
     app.router.add_static('/static/', path)
     logging.info('add static %s => %s' % ('/static/', path))
+
 
 def add_route(app, fn):
     method = getattr(fn, '__method__', None)  # 获得 fn的 __method__
     path = getattr(fn, '__route__', None)
-    if path is None or method is None: #如果为空
+    if path is None or method is None:  # 如果为空
         raise ValueError('@get or @post not defined in %s.' % str(fn))
-    if not asyncio.iscoroutinefunction(fn) and not inspect.isgeneratorfunction(fn):#判断函数类型
-        fn = asyncio.coroutine(fn) #手动装饰
-    logging.info('add route %s %s => %s(%s)' % (method, path, fn.__name__, ', '.join(inspect.signature(fn).parameters.keys())))
-    app.router.add_route(method, path, RequestHandler(app, fn))#     # app.router.add_route('GET', '/', index)
+    # 判断函数类型
+    if not asyncio.iscoroutinefunction(fn) and not inspect.isgeneratorfunction(fn):
+        fn = asyncio.coroutine(fn)  # 手动装饰
+    logging.info('add route %s %s => %s(%s)' % (
+        method, path, fn.__name__, ', '.join(inspect.signature(fn).parameters.keys())))
+    # app.router.add_route('GET', '/', index)
+    app.router.add_route(method, path, RequestHandler(app, fn))
 
 
 def add_routes(app, module_name):
-    n = module_name.rfind('.')#从后往前 找‘.’
-    if n == (-1):#找不到'.'
-        mod = __import__(module_name, globals(), locals())# 添加模块 module_name
+    n = module_name.rfind('.')  # 从后往前 找‘.’
+    if n == (-1):  # 找不到'.'
+        mod = __import__(module_name, globals(), locals())  # 添加模块 module_name
     else:
-        name = module_name[n+1:] # 名字是 aname.bname 点之后的部分
-        mod = getattr(__import__(module_name[:n], globals(), locals(), [name]), name)# 添加模块 aname.bname
-    for attr in mod.__all__: #将模块中的所有属性（方法也是属性）按照 list输出
-    #  这个dir 方法副作用太大，引入 导包的名字，所以建议 使用__all__属性，并手动写一下
-        if attr.startswith('_'): #如果 attr以 _ 开始
-            continue # 开始下一次循环(因为这是私有属性)
+        name = module_name[n + 1:]  # 名字是 aname.bname 点之后的部分
+        mod = getattr(__import__(module_name[:n], globals(), locals(), [
+                      name]), name)  # 添加模块 aname.bname
+    for attr in mod.__all__:  # 将模块中的所有属性（方法也是属性）按照 list输出
+        #  这个dir 方法副作用太大，引入 导包的名字，所以建议 使用__all__属性，并手动写一下
+        if attr.startswith('_'):  # 如果 attr以 _ 开始
+            continue  # 开始下一次循环(因为这是私有属性)
         fn = getattr(mod, attr)  # 获得 指针（可能是方法也可能是属性）
         if callable(fn):    # 如果 能call
-            add_route(app, fn)  #把这个 这个 fn添加到app中
-
-
+            add_route(app, fn)  # 把这个 这个 fn添加到app中

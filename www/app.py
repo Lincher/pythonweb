@@ -2,34 +2,37 @@
 async web application
 '''
 
-import os
-import std
-from functools import partial
-from datetime import datetime
-import logging
 import asyncio
-import json
-import time
 import inspect
+import json
+import logging
+import os
+import sys
+import time
+from datetime import datetime
+from functools import partial
+
 import jinja2
+from aiohttp import web
+
+import config
+import db
+# sys.path.append(os.path.dirname(os.path.realpath(__file__))+'\..\\lim')
+# #���ӵ�ģ������·����
+import lim
+import orm
+import std
+
 '''
 Jinja2 is a template engine written in pure Python.  It provides a
     Django inspired non-XML syntax but supports inline expressions and
     an optional sandboxed environment.
 '''
-from aiohttp import web
 # from jinja2 import Environment.FileSystemLoader
 
-import orm
-import db
-import sys
 # print(os.path.dirname(os.path.realpath(__file__))+'\..\\')  #当前文件所在的目录
 sys.path.append(os.path.dirname(
     os.path.realpath(__file__)) + '\..\\')  # 添加到模块搜索路径中
-# sys.path.append(os.path.dirname(os.path.realpath(__file__))+'\..\\lim')
-# #添加到模块搜索路径中
-import lim
-import config
 # from db import db.aiomysql
 # 可以通过导的包访问 导的包导入的包，但是bu'
 # from .import . 代表的是 __init__.py所在文件夹
