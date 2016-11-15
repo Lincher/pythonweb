@@ -6,7 +6,8 @@ Personal access tokens
 
 123d93f022a6555077f0f375f81cca4e . Please copy and use this ID in other machines to sync all settings.
 �ر�
-��ϢUploaded Successfully. GIST ID : 3bda14a660f36d59fec33be4da0a69f2 
+��ϢUploaded Successfully. GIST ID : 3bda14a660f36d5
+9fec33be4da0a69f2 
 
 
 ecb9a23356e9050326bd2edfbc9842b8da9d68de
@@ -22,3 +23,4 @@ e765275089216d44b33ca8a60feef73721914d11
 8350a69f0c8ddb48e8847edf1f3ce8285d16a470
 
 repo 5cc4479c577ad98fce94a3a83c55dcd276fc53d4 f8e1afc5657213566c91683818e3003d 
+fa61f4df7d08461743ce642ba7928cc083182723
