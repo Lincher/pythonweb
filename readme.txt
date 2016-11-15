@@ -5,8 +5,10 @@ Personal access tokens
 
 
 123d93f022a6555077f0f375f81cca4e . Please copy and use this ID in other machines to sync all settings.
-¹Ø±Õ
-ÐÅÏ¢Uploaded Successfully. GIST ID : 3bda14a660f36d59fec33be4da0a69f2 
+ï¿½Ø±ï¿½
+ï¿½ï¿½Ï¢Uploaded Successfully. GIST ID : 3bda14a660f36d59fec33be4da0a69f2 
 
 
 ecb9a23356e9050326bd2edfbc9842b8da9d68de
+
+ee2f2dabb49ed4e9338d5308b1ee2b1b9863835d
