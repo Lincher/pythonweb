@@ -33,3 +33,8 @@ b6d91fc4cb5971480c907403c49821da
 d0049a9deb10c25a3d429d68f1e84c5f 
 24c811d6e85ca41f9496cefc386ab8d791f63505
 d457bfab95c37f82fc56e4ccb1d1984c 
+
+extensions.json 
+keybindings.json 
+keybindingsMac.json 
+settings.json 
