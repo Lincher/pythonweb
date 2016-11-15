@@ -12,3 +12,5 @@ Personal access tokens
 ecb9a23356e9050326bd2edfbc9842b8da9d68de
 
 ee2f2dabb49ed4e9338d5308b1ee2b1b9863835d
+
+{"Token":"ee2f2dabb49ed4e9338d5308b1ee2b1b9863835d","Gist":"681923f2a78a2f6a0b12057650b46f22","lastUpload":"2016-11-15T02:29:30.465Z","firstTime":true,"autoDownload":false,"autoUpload":false,"allowUpload":true,"lastDownload":null,"Version":238,"showSummary":true,"publicGist":false,"forceDownload":false,"openLinks":true}
