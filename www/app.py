@@ -18,7 +18,8 @@ from aiohttp import web
 import config
 import db
 # sys.path.append(os.path.dirname(os.path.realpath(__file__))+'\..\\lim')
-# #���ӵ�ģ������·����
+sys.path.append(os.path.dirname(
+    os.path.realpath(__file__)) + '\..\\')  # 添加到模块搜索路径中
 import lim
 import orm
 import std
@@ -31,8 +32,7 @@ Jinja2 is a template engine written in pure Python.  It provides a
 # from jinja2 import Environment.FileSystemLoader
 
 # print(os.path.dirname(os.path.realpath(__file__))+'\..\\')  #当前文件所在的目录
-sys.path.append(os.path.dirname(
-    os.path.realpath(__file__)) + '\..\\')  # 添加到模块搜索路径中
+
 # from db import db.aiomysql
 # 可以通过导的包访问 导的包导入的包，但是bu'
 # from .import . 代表的是 __init__.py所在文件夹
