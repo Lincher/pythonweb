@@ -49,6 +49,20 @@ def index(request):
         'blogs': blogs
     }
 
+@get('/api/users')
+async def api_get_users(*,page='1'): #命名关键字参数
+    page_index =get_page_index(page)
+    num = await User.findNumber('count(id)')
+    p =Page(num,page_index)
+    if num == 0:
+        return dict(page=p,users=())
+    users =await User.findAll(orderBy='created_at desc',limit=(p.offset,p.limit))
+    for u in users:
+        u.passwd = '*******'
+    return dict(page=p,users=users)
+
+
+
 '''
 __file__ 代表的是当前文本，用getattr获得的是 字符串对象
 '''
