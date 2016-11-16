@@ -3,7 +3,13 @@ try:
 except SystemError:
     import coroweb  # Will also be exported.
 
-__all__ = {'coroweb'}
+try:
+    from . import apis
+except SystemError:
+    import apis  # Will also be exported.
+
+
+__all__ = {'coroweb','apis'}
 
 
 '''
