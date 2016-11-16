@@ -1,7 +1,7 @@
-import models
 import logging
 import time
 from request_decorator import get, post
+from models import User,Blog,Comment
 from aiohttp import web
 '''
 import get host以后，这两个方法进去了这个模块的dir 名字空间
@@ -39,7 +39,7 @@ def index(request):
         Blog(id='1', name='Test Blog', summary=summary,
              created_at=time.time() - 120),
         Blog(id='2', name='Something New',
-             summary=summary, created_at=time.time(-3600)),
+             summary=summary, created_at=time.time()-3600),
         Blog(id='3', name='Learn Swift', summary=summary,
              creat_at=time.time() - 7200)
 

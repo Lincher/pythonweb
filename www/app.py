@@ -155,8 +155,8 @@ def datatime_filter(t):
     return u'%s年%s月%s日' % (dt.year, dt.month, dt.day)
 
 
-def index(request):
-    return web.Response(body=b'<h1>Awesome</h1>')
+# def index(request):
+#     return web.Response(body=b'<h1>Awesome</h1>')
 
 
 @asyncio.coroutine
