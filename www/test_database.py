@@ -1,11 +1,12 @@
 import std
-import models,db
+import models
+import db
 import asyncio
 
 
 async def test(loop):
-    await db.creat_pool(loop=loop,user='www-data',password='www-data',
-    db='awesome')
+    await db.creat_pool(loop=loop, user='www-data', password='www-data',
+                        db='awesome')
 
     # u = models.User(name='Test',email='test@example.com',
     # passwd='1234567890',image='about:blank')

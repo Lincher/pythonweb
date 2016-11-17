@@ -116,17 +116,21 @@ class Model(dict, metaclass=ModelMetaclass):
         return cls(**[0])
 
     @classmethod
-    async def findAll(cls, orderBy=None, sort='asc'):
+    async def findAll(cls):
         'find all'
+<<<<<<< HEAD
         select_str = cls.__select_all__
         if orderBy != None:
             seq = [cls.__select_all__]
             seq.append('order by')
             seq.append(orderBy)
             seq.append(sort)
-            select_str=' '.join(seq)
+            select_str = ' '.join(seq)
 
         rows = await db.select(select_str)
+=======
+        rows = await db.select(cls.__select_all__)
+>>>>>>> parent of 63a2521... ...
         if rows == {}:
             logging.info('found nothing in this table')
         return [cls(**r) for r in rows]  # 返回一个table对象
@@ -138,7 +142,7 @@ class Model(dict, metaclass=ModelMetaclass):
         if where:
             sql.append('where')
             sql.append(where)
-        rs = await db.select(''.join(sql), args, 1)
+        rs = await db.select(''.join(sql),args,1)
         if len(rs) == 0:
             return None
         return rs[0]['_num_']

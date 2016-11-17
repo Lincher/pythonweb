@@ -18,7 +18,7 @@
 #     def fuck():
 #         pass
 
-#     __demo__ = None
+pu#     __demo__ = None
 
 # print(dir(a))
 
@@ -49,5 +49,6 @@
 #     print(attr)
 
 class test():
+
     def a():
         pass

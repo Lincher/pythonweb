@@ -1,13 +1,14 @@
 import functools
 
-def __request(path,*,method):
+
+def __request(path, *, method):
     '''
     define decorator request(get post)
     '''
     def decorator(func):
         @functools.wraps(func)
-        def wrapper(*a,**k):
-            return func(*a,**k)
+        def wrapper(*a, **k):
+            return func(*a, **k)
         wrapper.__method__ = method
         wrapper.__route__ = path
         return wrapper
@@ -36,7 +37,7 @@ def post(path):
     '''
     Define decorator @post('/path')
     '''
-    
+
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kw):
@@ -49,9 +50,6 @@ def post(path):
     '''
     Define decorator @post('/path')
     '''
-    
-
-
 
 
 # # unit test

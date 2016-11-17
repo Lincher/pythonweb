@@ -1,10 +1,8 @@
 import logging
 import time
 from request_decorator import get, post
+from models import User,Blog,Comment
 from aiohttp import web
-from models import *
-from lim.apis import *
-
 '''
 import get host以后，这两个方法进去了这个模块的dir 名字空间
 
@@ -41,7 +39,7 @@ def index(request):
         Blog(id='1', name='Test Blog', summary=summary,
              created_at=time.time() - 120),
         Blog(id='2', name='Something New',
-             summary=summary, created_at=time.time()-3600),
+             summary=summary, created_at=time.time() - 3600),
         Blog(id='3', name='Learn Swift', summary=summary,
              creat_at=time.time() - 7200)
 
@@ -51,28 +49,48 @@ def index(request):
         'blogs': blogs
     }
 
+<<<<<<< HEAD
 # @get('/api/users')
 # async def api_get_users():
 #     users =await User.findAll(orderBy='created_at',sort='desc')
 #     for u in users:
 #         u.passwd = '*******'
 #     return dict(users=users)
-_RE_EMAIL = re.compile(r'^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$')
+_RE_EMAIL = re.compile(
+    r'^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$')
 _RE_SHA1 = re.compile(r'^[0-9a-f]{40}$')
+
+
 @post('/api/users')
-async def api_register_user(*,email,name,passwd):
+async def api_register_user(*, email, name, passwd):
     if not name or not name.strip():
         raise APIValueError('name')
     if not email or not _RE_EMAIL.match(email):
         raise APIValueError('email')
     if not passwd or not _RE_SHA1.match(passwd):
         raise APIValueError('passwd')
-    users = await User.findAll('email=?',[email])
-    if len(users)>0:
-        raise APIError('register:failed','email','Email is already in use')
-    uid =next_id()
-    sha1_passwd ='%s:%s' % (uid,passwd)
-    user = User(id=uid, name=name.strip(), email=email, passwd=hashlib.sha1(sha1_passwd.encode('utf-8')).hexdigest(), image='http://www.gravatar.com/avatar/%s?d=mm&s=120' % hashlib.md5(email.encode('utf-8')).hexdigest())
+    users = await User.findAll('email=?', [email])
+    if len(users) > 0:
+        raise APIError('register:failed', 'email', 'Email is already in use')
+    uid = next_id()
+    sha1_passwd = '%s:%s' % (uid, passwd)
+    user = User(id=uid, name=name.strip(), email=email, passwd=hashlib.sha1(sha1_passwd.encode('utf-8')).hexdigest(),
+                image='http://www.gravatar.com/avatar/%s?d=mm&s=120' % hashlib.md5(email.encode('utf-8')).hexdigest())
+=======
+@get('/api/users')
+async def api_get_users(*,page='1'): #命名关键字参数
+    page_index =get_page_index(page)
+    num = await User.findNumber('count(id)')
+    p =Page(num,page_index)
+    if num == 0:
+        return dict(page=p,users=())
+    users =await User.findAll(orderBy='created_at desc',limit=(p.offset,p.limit))
+    for u in users:
+        u.passwd = '*******'
+    return dict(page=p,users=users)
+
+
+>>>>>>> parent of 63a2521... ...
 
 '''
 __file__ 代表的是当前文本，用getattr获得的是 字符串对象

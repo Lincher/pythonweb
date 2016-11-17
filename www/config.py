@@ -5,9 +5,8 @@
 Configuration
 '''
 
-__author__ = 'Michael Liao'
-
 import config_default
+__author__ = 'Michael Liao'
 
 
 class Dict(dict):

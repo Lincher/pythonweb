@@ -1,7 +1,6 @@
 '''
 async web application
 '''
-
 import asyncio
 import inspect
 import json
@@ -9,21 +8,17 @@ import logging
 import os
 import sys
 import time
-from datetime import datetime
-from functools import partial
-
 import jinja2
-from aiohttp import web
-
 import config
 import db
 # sys.path.append(os.path.dirname(os.path.realpath(__file__))+'\..\\lim')
-sys.path.append(os.path.dirname(
-    os.path.realpath(__file__)) + '\..\\')  # 添加到模块搜索路径中
 import lim
 import orm
 import std
 
+from datetime import datetime
+from functools import partial
+from aiohttp import web
 '''
 Jinja2 is a template engine written in pure Python.  It provides a
     Django inspired non-XML syntax but supports inline expressions and
@@ -178,4 +173,5 @@ def init(loop):
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(init(loop))
+# 回调函数调用了对象
 loop.run_forever()
