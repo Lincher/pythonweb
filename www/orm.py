@@ -118,7 +118,7 @@ class Model(dict, metaclass=ModelMetaclass):
     @classmethod
     async def findAll(cls):
         'find all'
-<<<<<<< HEAD
+<< << << < HEAD
         select_str = cls.__select_all__
         if orderBy != None:
             seq = [cls.__select_all__]
@@ -128,9 +128,9 @@ class Model(dict, metaclass=ModelMetaclass):
             select_str = ' '.join(seq)
 
         rows = await db.select(select_str)
-=======
+== == == =
         rows = await db.select(cls.__select_all__)
->>>>>>> parent of 63a2521... ...
+>>>>>> > parent of 63a2521... ...
         if rows == {}:
             logging.info('found nothing in this table')
         return [cls(**r) for r in rows]  # 返回一个table对象

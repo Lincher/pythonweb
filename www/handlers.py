@@ -1,7 +1,7 @@
 import logging
 import time
 from request_decorator import get, post
-from models import User,Blog,Comment
+from models import User, Blog, Comment
 from aiohttp import web
 '''
 import get host以后，这两个方法进去了这个模块的dir 名字空间
@@ -49,7 +49,6 @@ def index(request):
         'blogs': blogs
     }
 
-<<<<<<< HEAD
 # @get('/api/users')
 # async def api_get_users():
 #     users =await User.findAll(orderBy='created_at',sort='desc')
@@ -76,21 +75,28 @@ async def api_register_user(*, email, name, passwd):
     sha1_passwd = '%s:%s' % (uid, passwd)
     user = User(id=uid, name=name.strip(), email=email, passwd=hashlib.sha1(sha1_passwd.encode('utf-8')).hexdigest(),
                 image='http://www.gravatar.com/avatar/%s?d=mm&s=120' % hashlib.md5(email.encode('utf-8')).hexdigest())
-=======
+    await user.save()
+    # make session cookie:
+    r = web.Response()
+    r.set_cookie(COOKIE_NAME,user2cookie(user,86400),max_age=86400,httpponly=True)
+    user.passwd='*****'
+    r.content_type='application/json'
+    r.body =json.dumps(user,ensure_ascii=False).encode('utf-8')
+    return r
+
+
 @get('/api/users')
-async def api_get_users(*,page='1'): #命名关键字参数
-    page_index =get_page_index(page)
+async def api_get_users(*, page='1'):  # 命名关键字参数
+    page_index = get_page_index(page)
     num = await User.findNumber('count(id)')
-    p =Page(num,page_index)
+    p = Page(num, page_index)
     if num == 0:
-        return dict(page=p,users=())
-    users =await User.findAll(orderBy='created_at desc',limit=(p.offset,p.limit))
+        return dict(page=p, users=())
+    users = await User.findAll(orderBy='created_at desc', limit=(p.offset, p.limit))
     for u in users:
         u.passwd = '*******'
-    return dict(page=p,users=users)
+    return dict(page=p, users=users)
 
-
->>>>>>> parent of 63a2521... ...
 
 '''
 __file__ 代表的是当前文本，用getattr获得的是 字符串对象
