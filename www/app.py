@@ -12,9 +12,9 @@ import jinja2
 import config
 import db
 # sys.path.append(os.path.dirname(os.path.realpath(__file__))+'\..\\lim')
+import std
 import lim
 import orm
-import std
 
 from datetime import datetime
 from functools import partial

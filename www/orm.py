@@ -1,8 +1,9 @@
-__author__ = 'Lincher'
 
 import db
 import field
 import logging
+
+__author__ = 'Lincher'
 
 # 魔术类，元数据类，创造类的类
 #>>> Foo = type('Foo', (父类), {'bar':True})
@@ -118,7 +119,6 @@ class Model(dict, metaclass=ModelMetaclass):
     @classmethod
     async def findAll(cls):
         'find all'
-<< << << < HEAD
         select_str = cls.__select_all__
         if orderBy != None:
             seq = [cls.__select_all__]
@@ -127,10 +127,7 @@ class Model(dict, metaclass=ModelMetaclass):
             seq.append(sort)
             select_str = ' '.join(seq)
 
-        rows = await db.select(select_str)
-== == == =
         rows = await db.select(cls.__select_all__)
->>>>>> > parent of 63a2521... ...
         if rows == {}:
             logging.info('found nothing in this table')
         return [cls(**r) for r in rows]  # 返回一个table对象
@@ -141,7 +138,6 @@ class Model(dict, metaclass=ModelMetaclass):
         sql = ['select %s _num_ from `%s`' % (selectField, cls.__table__)]
         if where:
             sql.append('where')
-            sql.append(where)
         rs = await db.select(''.join(sql),args,1)
         if len(rs) == 0:
             return None
