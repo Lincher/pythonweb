@@ -9,7 +9,9 @@
         var re = /^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$/;
         return re.test(email.toLowerCase());
     }
-    $(function() {
+
+    $(() => {
+        $('#vm').show();
         var vm = new Vue({
             el: '#vm',
             data: {
@@ -19,7 +21,7 @@
                 password2: ''
             },
             methods: {
-                submit: function(event) {
+                submit: (event) => {
                     event.preventDefault();
                     var $form = $('#vm');
                     if (!this.name.trim()) {
@@ -39,7 +41,7 @@
                         name: this.name.trim(),
                         email: email,
                         passwd: CryptoJS.SHA1(email + ':' + this.password1).toString()
-                    }, function(err, r) {
+                    }, (err, r) => {
                         if (err) {
                             return $form.showFormError(err);
                         }
@@ -48,7 +50,6 @@
                 }
             }
         });
-        $('#vm').show();
     });
 </script>
 
