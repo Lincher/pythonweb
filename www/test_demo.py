@@ -18,7 +18,7 @@
 #     def fuck():
 #         pass
 
-pu#     __demo__ = None
+#     __demo__ = None
 
 # print(dir(a))
 
