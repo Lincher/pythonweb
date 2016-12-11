@@ -29,8 +29,6 @@ Jinja2 is a template engine written in pure Python.  It provides a
 
 # print(os.path.dirname(os.path.realpath(__file__))+'\..\\')  #当前文件所在的目录
 
-# from db import db.aiomysql
-# 可以通过导的包访问 导的包导入的包，但是bu'
 # from .import . 代表的是 __init__.py所在文件夹
 
 
@@ -75,13 +73,11 @@ def init_jinja2(app, **kw):
 '''
 
 
-@asyncio.coroutine
-def logger_factory(app, handler):
-    @asyncio.coroutine
-    def logger(request):
+async def logger_factory(app, handler):
+    async def logger(request):
         logging.info('request:%s %s' % (request.method, request.path))
         logging.info('handler: %s' % (handler.__name__))
-        return (yield from handler(request))
+        return await handler(request)
     return logger
 
 async def data_factory(app, handler):
@@ -97,11 +93,9 @@ async def data_factory(app, handler):
     return parse_data
 
 
-@asyncio.coroutine
-def response_factory(app, handler):
-    @asyncio.coroutine
-    def response(request):
-        r = yield from handler(request)
+async def response_factory(app, handler):
+    async def response(request):
+        r = await handler(request)
         if isinstance(r, web.StreamResponse):
             return r
         if isinstance(r, bytes):

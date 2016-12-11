@@ -36,13 +36,27 @@ async def test(a, request):
 def index(request):
     summary = ' Lorem ipsum dolor sit amet ,consectetur adipissicing elit,sed do\
     eisusmod tempor incididunt ut labore at dolore magna aliqua.'
+
+    def datatime_filter(t):
+        delta = int(time.time() - t)
+        if delta < 60:
+            return u'1分钟前'
+        if delta < 3600:
+            return u'%s分钟前' % (delta // 60)
+        if delta < 86400:
+            return u'%s小时前' % (delta // 3600)
+        if delta < 604800:
+            return u'%s天前' % (delta // 86400)
+        dt = datetime.fromtimestamp(t)
+        return u'%s年%s月%s日' % (dt.year, dt.month, dt.day)
+
     blogs = [
         Blog(id='1', name='Test Blog', summary=summary,
-             created_at=time.time() - 120),
+             created_at=datatime_filter(time.time() - 120)),
         Blog(id='2', name='Something New',
-             summary=summary, created_at=time.time() - 3600),
+             summary=summary, created_at=datatime_filter(time.time() - 3600)),
         Blog(id='3', name='Learn Swift', summary=summary,
-             creat_at=time.time() - 7200)
+             creat_at=datatime_filter(time.time() - 7200))
 
     ]
     return{
