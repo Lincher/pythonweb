@@ -112,6 +112,7 @@ async def api_get_users(*, page='1'):  # 命名关键字参数
         u.passwd = '*******'
     return dict(page=p, users=users)
 
+
 @post('/api/authenticate')
 def authenticate(*, email, passwd):
     if not email:
@@ -131,13 +132,16 @@ def authenticate(*, email, passwd):
         raise APIValueError('passwd', 'Invalid password.')
     # authenticate ok, set cookie:
     r = web.Response()
-    r.set_cookie(COOKIE_NAME, user2cookie(user, 86400), max_age=86400, httponly=True)
+    r.set_cookie(COOKIE_NAME, user2cookie(
+        user, 86400), max_age=86400, httponly=True)
     user.passwd = '******'
     r.content_type = 'application/json'
     r.body = json.dumps(user, ensure_ascii=False).encode('utf-8')
     return r
 
 # 计算加密cookie:
+
+
 def user2cookie(user, max_age):
     # build cookie string by: id-expires-sha1
     expires = str(int(time.time() + max_age))
