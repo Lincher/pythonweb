@@ -19,6 +19,7 @@ import orm
 from datetime import datetime
 from functools import partial
 from aiohttp import web
+from handlers import user2cookie,COOKIE_NAME
 '''
 Jinja2 is a template engine written in pure Python.  It provides a
     Django inspired non-XML syntax but supports inline expressions and
@@ -189,7 +190,7 @@ def datatime_filter(t):
 
 @asyncio.coroutine
 def init(loop):
-    yield from db.creat_pool(loop=loop, **config.config_default.configs)
+    yield from db.creat_pool(loop=loop, **config.config_default.configs['db'])
 
     # 获取数据库连接池
     # 获取web应用对象,中间件用来绑定请求和请求处理

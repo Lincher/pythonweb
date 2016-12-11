@@ -6,12 +6,20 @@ from request_decorator import get, post
 from models import User, Blog, Comment
 from aiohttp import web
 from lim import apis
+from config import configs
 '''
 import get host以后，这两个方法进去了这个模块的dir 名字空间
 
 协程的本质是函数调用，但是它保存了函数执行的状态（中断），以至于函数能顺序往下执行
 
 '''
+
+
+COOKIE_NAME = 'awesession'
+_COOKIE_KYE = configs.session.secret
+_RE_EMAIL = re.compile(
+    r'^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$')
+_RE_SHA1 = re.compile(r'^[0-9a-f]{40}$')
 
 
 @post('/test')
@@ -42,9 +50,28 @@ def index(request):
         'blogs': blogs
     }
 
-_RE_EMAIL = re.compile(
-    r'^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$')
-_RE_SHA1 = re.compile(r'^[0-9a-f]{40}$')
+
+@get('/register')
+def register():
+    return {
+        '__template__': 'register.html'
+    }
+
+
+@get('/signin')
+def signin():
+    return {
+        '__template__': 'signin.html'
+    }
+
+
+@get('/signout')
+def signout(request):
+    referer = request.header.get('Referer')
+    r = web.HTTPFound(referer or '/')
+    r.set_cookie(COOKIE_NAME, '-deleted-', max_age=0, httponly=True)
+    logging.info('user signed out.')
+    return r
 
 
 @post('/api/users')
