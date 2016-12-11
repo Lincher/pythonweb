@@ -1,25 +1,17 @@
 import logging
 import time
 import re
+import hashlib
 from request_decorator import get, post
 from models import User, Blog, Comment
 from aiohttp import web
+from lim import apis
 '''
 import get host以后，这两个方法进去了这个模块的dir 名字空间
 
 协程的本质是函数调用，但是它保存了函数执行的状态（中断），以至于函数能顺序往下执行
 
 '''
-
-
-@get('/')
-def jinja2_handlers(request):
-    logging.info('request:%s %s' % (request.method, request.path))
-
-    return web.Response(body=b'<h1>jinja2-Awesome</h1>,content_type="text/html",charset="UTF-8"')
-
-# ValueError, request parameter must be the last named parameter in
-# function: test(request, a, *b)
 
 
 @post('/test')
@@ -50,12 +42,6 @@ def index(request):
         'blogs': blogs
     }
 
-# @get('/api/users')
-# async def api_get_users():
-#     users =await User.findAll(orderBy='created_at',sort='desc')
-#     for u in users:
-#         u.passwd = '*******'
-#     return dict(users=users)
 _RE_EMAIL = re.compile(
     r'^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$')
 _RE_SHA1 = re.compile(r'^[0-9a-f]{40}$')
@@ -79,10 +65,11 @@ async def api_register_user(*, email, name, passwd):
     await user.save()
     # make session cookie:
     r = web.Response()
-    r.set_cookie(COOKIE_NAME,user2cookie(user,86400),max_age=86400,httpponly=True)
-    user.passwd='*****'
-    r.content_type='application/json'
-    r.body =json.dumps(user,ensure_ascii=False).encode('utf-8')
+    r.set_cookie(COOKIE_NAME, user2cookie(user, 86400),
+                 max_age=86400, httpponly=True)
+    user.passwd = '*****'
+    r.content_type = 'application/json'
+    r.body = json.dumps(user, ensure_ascii=False).encode('utf-8')
     return r
 
 
@@ -98,6 +85,40 @@ async def api_get_users(*, page='1'):  # 命名关键字参数
         u.passwd = '*******'
     return dict(page=p, users=users)
 
+
+@post('/api/authenticate')
+async def authenticate(*, email, passwd):
+    if not email:
+        raise APIValueError('email', 'Invalid email.')
+    if not passwd:
+        raise APIValueError('passwd', 'Invalid password.')
+    users = await User.findAll('email=?', [email])
+    if len(user) == 0:
+        raise APIValueError('email', 'email not exist.')
+    user = user[0]
+
+    sha1 = hashlib.sha1()
+    sha1.update(user.id.encode('utf-8'))
+    sha1.update(b":")
+    sha1.update(passwd.encode('utf-8'))
+
+    if user.passwd != sha1.hexdigest():
+        raise APIValueError('passwd', 'Invalid password')
+
+    r = web.Response()
+    r.set_cookie(COOKIE_NAME, user2cookie(
+        user, 86400), max_age=86400, httponly=True)
+    user.passwd = '*******'
+    r.content_type = "application/json"
+    r.body = json.dumps(user, ensure_ascii=False).encode('utf-8')
+    return r
+
+
+def user2cookie(user, max_age):
+    expires = str(int(time.time() + max_age))
+    s = '%s-%s-%s-%s' % (user.id, user.passwd, expires, _COOKIE_KEY)
+    l = [user.id, expires, hashlib.sha1(s.encode('utf-8')).hexdigest()]
+    return '-'.join(L)
 
 '''
 __file__ 代表的是当前文本，用getattr获得的是 字符串对象

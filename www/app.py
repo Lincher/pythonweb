@@ -136,6 +136,43 @@ def response_factory(app, handler):
     return response
 
 
+async def auth_factory(app, handler):
+    async def auth(request):
+        logging.info('check user: %s %s' % (request.method, request.path))
+        request.__user__ = None
+        cookie_str = request.cookies.get(COOKIE_NAME)
+        if cookie_str:
+            user = await cookie2user(cookie_str)
+            if user:
+                logging.info('set current user: %s' % user.email)
+                request.__user__ = user
+        return (await handler(request))
+    return auth
+
+async def cookie2user(cookie_str):
+    if not cookie_str:
+        return None
+    try:
+        L = cookie_str.split('-')
+        if len(L) != 3:
+            return None
+        uid, expires, sha1 = L
+        if int(expires) < time.time():
+            return None
+        user = await User.find(uid)
+        if user is None:
+            return None
+        s = "%s-%s-%s-%s" % (uid, user.passwd, expires, __COOKIE_KEY)
+        if sha1 != hashlib.sha1(s.encode('utf-8')).hexdigest():
+            logging.info('invalid sha1')
+            return None
+        user.passwd = '******'
+        return user
+    except Exception as e:
+        logging.exception(e)
+        return None
+
+
 def datatime_filter(t):
     delta = int(time.time() - t)
     if delta < 60:
@@ -150,10 +187,6 @@ def datatime_filter(t):
     return u'%s年%s月%s日' % (dt.year, dt.month, dt.day)
 
 
-# def index(request):
-#     return web.Response(body=b'<h1>Awesome</h1>')
-
-
 @asyncio.coroutine
 def init(loop):
     yield from db.creat_pool(loop=loop, **config.config_default.configs)
@@ -161,7 +194,7 @@ def init(loop):
     # 获取数据库连接池
     # 获取web应用对象,中间件用来绑定请求和请求处理
     app = web.Application(loop=loop, middlewares=[
-                          logger_factory, response_factory, data_factory])
+                          logger_factory, response_factory, data_factory, auth_factory])
     init_jinja2(app, filters=dict(datetime=datatime_filter))
     # app.router.add_route('GET', '/', index)
     # help(app.router.add_route)
