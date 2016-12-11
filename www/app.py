@@ -19,7 +19,7 @@ import orm
 from datetime import datetime
 from functools import partial
 from aiohttp import web
-from handlers import user2cookie,COOKIE_NAME
+from handlers import user2cookie, COOKIE_NAME
 '''
 Jinja2 is a template engine written in pure Python.  It provides a
     Django inspired non-XML syntax but supports inline expressions and
