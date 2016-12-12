@@ -6,7 +6,7 @@ import logging
 __author__ = 'Lincher'
 
 # 魔术类，元数据类，创造类的类
-#>>> Foo = type('Foo', (父类), {'bar':True})
+# >>> Foo = type('Foo', (父类), {'bar':True})
 
 
 class ModelMetaclass(type):
@@ -108,7 +108,7 @@ class Model(dict, metaclass=ModelMetaclass):
 # '''
 # 使用在类中使用多行注释会引起错误的缩进bug?????????
     @classmethod
-    async def find(cls, pk):
+    async def find_by_pk(cls, pk):
         "find object by primary key."
         rs = await db.select('%s where `%s`=?' % (cls.__select__, cls.__primary_key__),
                              [pk], 1)
@@ -116,18 +116,41 @@ class Model(dict, metaclass=ModelMetaclass):
             return None
         return cls(**[0])
 
-    @classmethod
-    async def findAll(cls):
-        'find all'
-        select_str = cls.__select_all__
-        if orderBy != None:
-            seq = [cls.__select_all__]
-            seq.append('order by')
-            seq.append(orderBy)
-            seq.append(sort)
-            select_str = ' '.join(seq)
+    # @classmethod
+    # async def find_by_key(cls, key):
+    #     "find object by some key."
+    #     rs = await db.select('%s where `%s`=?' % (cls.__select__, cls.__primary_key__),
+    #                          [pk], 1)
+    #     if len(rs) == 0:
+    #         return None
+    #     return cls(**[0])
 
-        rows = await db.select(cls.__select_all__)
+    @classmethod
+    async def findAll(cls, where=None, args=None, **kw):
+        'find all object by where clause'
+        sql = [cls.__select_all__]
+        if where:
+            sql.append('where')
+            sql.append(where)
+        if args is None:
+            args = []
+        orderBy = kw.get('orderBy', None)
+        if orderBy:
+            sql.append('order by')
+            sql.append(orderBy)
+        limit = kw.get('limit', None)
+        if limit is not None:
+            sql.append('limit')
+            if isinstance(limit, int):
+                sql.append('?')
+                args.append(limit)
+            elif isinstance(limit, tuple) and len(limit) == 2:
+                sql.append('?, ?')
+                args.append(limit)
+            else:
+                raise ValueError('Invalid limit value:%s' % str(limit))
+
+        rows = await db.select(' '.join(sql), args)
         if rows == {}:
             logging.info('found nothing in this table')
         return [cls(**r) for r in rows]  # 返回一个table对象
@@ -138,7 +161,7 @@ class Model(dict, metaclass=ModelMetaclass):
         sql = ['select %s _num_ from `%s`' % (selectField, cls.__table__)]
         if where:
             sql.append('where')
-        rs = await db.select(''.join(sql),args,1)
+        rs = await db.select(''.join(sql), args, 1)
         if len(rs) == 0:
             return None
         return rs[0]['_num_']

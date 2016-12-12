@@ -30,19 +30,16 @@ async def creat_pool(loop, **kw):
         loop=loop
     )
 
-#    @asyncio.coroutine
 async def select(sql, args=None, size=None):
     log(sql, args)
     global __pool
     async with __pool.get() as conn:
-        # cur =yield from conn.cursor(aiomysql.DictCursor)
         async with conn.cursor(aiomysql.DictCursor) as cur:
             await cur.execute(sql.replace("?", "%s"), args or ())
             if size:
                 rs = await cur.fetchmany(size)
             else:
                 rs = await cur.fetchall()
-        # yield from cur.close()
         logging.info("rows returned:%s" % len(rs))
         return rs
 

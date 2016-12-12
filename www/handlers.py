@@ -2,11 +2,13 @@ import logging
 import time
 import re
 import hashlib
+import json
 from request_decorator import get, post
-from models import User, Blog, Comment
+from models import *
 from aiohttp import web
-from lim import apis
+from lim.apis import *
 from config import configs
+
 '''
 import get host以后，这两个方法进去了这个模块的dir 名字空间
 
@@ -16,7 +18,7 @@ import get host以后，这两个方法进去了这个模块的dir 名字空间
 
 
 COOKIE_NAME = 'awesession'
-_COOKIE_KYE = configs.session.secret
+_COOKIE_KEY = configs.session.secret
 _RE_EMAIL = re.compile(
     r'^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$')
 _RE_SHA1 = re.compile(r'^[0-9a-f]{40}$')
@@ -107,10 +109,11 @@ async def api_register_user(*, email, name, passwd):
     # make session cookie:
     r = web.Response()
     r.set_cookie(COOKIE_NAME, user2cookie(user, 86400),
-                 max_age=86400, httpponly=True)
-    user.passwd = '*****'
+                 max_age=86400, httponly=True)
+    user.passwd = '******'
     r.content_type = 'application/json'
-    r.body = json.dumps(user, ensure_ascii=False).encode('utf-8')
+    r.body = json.dumps(user, ensure_ascii=False).encode(
+        'utf-8')  # json.dumps dict转成str
     return r
 
 

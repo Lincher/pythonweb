@@ -85,7 +85,7 @@ async def data_factory(app, handler):
         if request.method == 'POST':
             if request.content_type.startswith('application/json'):
                 request.__data__ = await request.json()
-                logging.info('requset json:%s' % str(requset.__data__))
+                logging.info('requset json:%s' % str(request.__data__))
             elif request.content_type.startswith('application/x-www-from-urlencoded'):
                 request.__data__ = await request.post()
                 logging.info('request frion : %s' % str(request.__data__))
