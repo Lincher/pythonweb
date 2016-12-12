@@ -7,7 +7,8 @@
             "request": "launch",
             "stopOnEntry": true,
             "pythonPath": "${config.python.pythonPath}",
-            "program": "${file}",
+            //"program": "${file}",
+            "program": "${workspaceRoot}/app.py",
             "debugOptions": [
                 "WaitOnAbnormalExit",
                 "WaitOnNormalExit",
@@ -20,7 +21,7 @@
             "request": "launch",
             "stopOnEntry": true,
             "pythonPath": "${config.python.pythonPath}",
-            "program": "${file}",
+            "program": "${workspaceRoot}/app.py",
             "externalConsole": true,
             "debugOptions": [
                 "WaitOnAbnormalExit",
