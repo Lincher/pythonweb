@@ -8,7 +8,7 @@
             "stopOnEntry": true,
             "pythonPath": "${config.python.pythonPath}",
             //"program": "${file}",
-            "program": "${workspaceRoot}/app.py",
+            "program": "${workspaceRoot}/www/app.py",
             "debugOptions": [
                 "WaitOnAbnormalExit",
                 "WaitOnNormalExit",
