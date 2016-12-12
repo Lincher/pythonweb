@@ -3,14 +3,14 @@
 {% block title %}注册{% endblock %}
 <!--beforehead-->
 {% block beforehead %}
-
-<script>
+<script src="/static/js/vue.js"></script>
+<!--<script>
     function validateEmail(email) {
         var re = /^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$/;
         return re.test(email.toLowerCase());
     }
 
-    $(() => {
+    $(function(){
         $('#vm').show();
         var vm = new Vue({
             el: '#vm',
@@ -21,7 +21,7 @@
                 password2: ''
             },
             methods: {
-                submit: (event) => {
+                submit: function(event){
                     event.preventDefault();
                     var $form = $('#vm');
                     if (!this.name.trim()) {
@@ -41,12 +41,35 @@
                         name: this.name.trim(),
                         email: email,
                         passwd: CryptoJS.SHA1(email + ':' + this.password1).toString()
-                    }, (err, r) => {
+                    }, function(err, r){
                         if (err) {
                             return $form.showFormError(err);
                         }
                         return location.assign('/');
                     });
+                }
+            }
+        });
+    });
+</script>-->
+<script>
+    function validateEmail(email) {
+        var re = /^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$/;
+        return re.test(email.toLowerCase());
+    }
+    $(function() {
+        $('#vm').show();
+        var vm = new Vue({
+            el: '#regist',
+            data: {
+                name: '',
+                email: '',
+                password1: '',
+                password2: ''
+            },
+            method: {
+                submit: function(event) {
+                    alert('haha');
                 }
             }
         });
@@ -85,8 +108,8 @@
                 <input v-model="password2" type="password" maxlength="50" placeholder="重复口令" class="uk-width-1-1">
             </div>
         </div>
-        <div class="uk-form-row">
-            <button type="submit" class="uk-button uk-button-primary"><i class="uk-icon-user"></i> 注册</button>
+        <div class="uk-form-row" id="regist">
+            <button type="submit" class="uk-button uk-button-primary"><i class="uk-icon-user" v-on:click="submit"></i> 注册</button>
         </div>
     </form>
 </div>
