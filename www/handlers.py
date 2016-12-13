@@ -6,7 +6,7 @@ import json
 from request_decorator import get, post
 from models import *
 from aiohttp import web
-from lim.apis import *
+from lim.Error import *
 from config import configs
 
 '''

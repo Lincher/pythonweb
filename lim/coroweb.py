@@ -7,9 +7,9 @@ from urllib import parse
 from aiohttp import web
 
 try:
-    from apis import APIError
+    from Error import APIError
 except ImportError:
-    from .apis import APIError
+    from .Error import APIError
 
 
 def get_required_kw_args(fn):   # demo(a,*,b,c=0) 返回 (b)
