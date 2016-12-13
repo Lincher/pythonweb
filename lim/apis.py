@@ -2,6 +2,7 @@
 JSON API definition.
 '''
 
+
 class APIError(Exception):
     '''
     the base APIError which contains error(required), data(optional) and message(optional).
