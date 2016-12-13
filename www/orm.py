@@ -116,15 +116,6 @@ class Model(dict, metaclass=ModelMetaclass):
             return None
         return cls(**[0])
 
-    # @classmethod
-    # async def find_by_key(cls, key):
-    #     "find object by some key."
-    #     rs = await db.select('%s where `%s`=?' % (cls.__select__, cls.__primary_key__),
-    #                          [pk], 1)
-    #     if len(rs) == 0:
-    #         return None
-    #     return cls(**[0])
-
     @classmethod
     async def findAll(cls, where=None, args=None, **kw):
         'find all object by where clause'

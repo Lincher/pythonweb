@@ -4,12 +4,12 @@ except SystemError:
     import coroweb  # Will also be exported.
 
 try:
-    from . import apis
+    from . import Error
 except SystemError:
-    import apis  # Will also be exported.
+    import Error  # Will also be exported.
 
 
-__all__ = {'coroweb', 'apis'}
+__all__ = {'coroweb', 'Error'}
 
 
 '''
