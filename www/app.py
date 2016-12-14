@@ -72,7 +72,7 @@ def init_jinja2(app, **kw):
 # middleware 回调函数 参数(服务器端的web对象，请求处理函数)
 '''
 
-
+# 日志
 async def logger_factory(app, handler):
     async def logger(request):
         logging.info('request:%s %s' % (request.method, request.path))
@@ -80,6 +80,7 @@ async def logger_factory(app, handler):
         return await handler(request)
     return logger
 
+# 在handler之前，解析post数据并绑定到request对象上
 async def data_factory(app, handler):
     async def parse_data(request):
         if request.method == 'POST':
@@ -93,6 +94,22 @@ async def data_factory(app, handler):
     return parse_data
 
 
+# handler之前先 处理浏览器发送的cookie
+async def auth_factory(app, handler):
+    async def auth(request):
+        logging.info('check user: %s %s' % (request.method, request.path))
+        request.__user__ = None
+        cookie_str = request.cookies.get(COOKIE_NAME)
+        if cookie_str:
+            user = await cookie2user(cookie_str)
+            if user:
+                logging.info('set current user: %s' % user.email)
+                request.__user__ = user
+        return (await handler(request))
+    return auth
+
+
+# 在handler之后，处理不同类型的返回值
 async def response_factory(app, handler):
     async def response(request):
         r = await handler(request)
@@ -131,19 +148,7 @@ async def response_factory(app, handler):
     return response
 
 
-async def auth_factory(app, handler):
-    async def auth(request):
-        logging.info('check user: %s %s' % (request.method, request.path))
-        request.__user__ = None
-        cookie_str = request.cookies.get(COOKIE_NAME)
-        if cookie_str:
-            user = await cookie2user(cookie_str)
-            if user:
-                logging.info('set current user: %s' % user.email)
-                request.__user__ = user
-        return (await handler(request))
-    return auth
-
+# 通过cookie拿到user
 async def cookie2user(cookie_str):
     if not cookie_str:
         return None
@@ -182,9 +187,8 @@ def datatime_filter(t):
     return u'%s年%s月%s日' % (dt.year, dt.month, dt.day)
 
 
-@asyncio.coroutine
-def init(loop):
-    yield from db.creat_pool(loop=loop, **config.config_default.configs['db'])
+async def init(loop):
+    await db.creat_pool(loop=loop, **config.config_default.configs['db'])
 
     # 获取数据库连接池
     # 获取web应用对象,中间件用来绑定请求和请求处理
@@ -195,7 +199,7 @@ def init(loop):
     # help(app.router.add_route)
     lim.coroweb.add_routes(app, 'handlers')
     lim.coroweb.add_static(app)
-    srv = yield from loop.create_server(app.make_handler(), '127.0.0.1', 9000)
+    srv = await loop.create_server(app.make_handler(), '127.0.0.1', 9000)
     logging.info('server started at http://127.0.0.1:9000...')
     return srv
 
