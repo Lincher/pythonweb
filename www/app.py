@@ -11,6 +11,7 @@ import time
 import jinja2
 import config
 import db
+import hashlib
 # sys.path.append(os.path.dirname(os.path.realpath(__file__))+'\..\\lim')
 import std
 import lim
@@ -19,7 +20,8 @@ import orm
 from datetime import datetime
 from functools import partial
 from aiohttp import web
-from handlers import user2cookie, COOKIE_NAME
+from handlers import user2cookie, COOKIE_NAME, COOKIE_KEY
+from models import *
 '''
 Jinja2 is a template engine written in pure Python.  It provides a
     Django inspired non-XML syntax but supports inline expressions and
@@ -153,16 +155,17 @@ async def cookie2user(cookie_str):
     if not cookie_str:
         return None
     try:
+        logging.info("cookie_str:%s" % (str(cookie_str)))
         L = cookie_str.split('-')
         if len(L) != 3:
             return None
         uid, expires, sha1 = L
         if int(expires) < time.time():
             return None
-        user = await User.find(uid)
+        user = await User.find_by_pk(uid)
         if user is None:
             return None
-        s = "%s-%s-%s-%s" % (uid, user.passwd, expires, __COOKIE_KEY)
+        s = "%s-%s-%s-%s" % (uid, user.passwd, expires, COOKIE_KEY)
         if sha1 != hashlib.sha1(s.encode('utf-8')).hexdigest():
             logging.info('invalid sha1')
             return None

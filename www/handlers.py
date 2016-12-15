@@ -19,7 +19,7 @@ import get host以后，这两个方法进去了这个模块的dir 名字空间
 
 
 COOKIE_NAME = 'awesession'
-_COOKIE_KEY = configs.session.secret
+COOKIE_KEY = configs.session.secret
 _RE_EMAIL = re.compile(
     r'^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$')
 _RE_SHA1 = re.compile(r'^[0-9a-f]{40}$')
@@ -64,7 +64,8 @@ def index(request):
     ]
     return{
         '__template__': "blogs.html",
-        'blogs': blogs
+        'blogs': blogs,
+        'user': request.__user__
     }
 
 
@@ -115,6 +116,7 @@ async def api_register_user(*, email, name, passwd):
     r.content_type = 'application/json'
     r.body = json.dumps(user, ensure_ascii=False).encode(
         'utf-8')  # json.dumps dict转成str
+    logging.info("register api return: %s" % r)
     return r
 
 
@@ -163,7 +165,7 @@ async def authenticate(*, email, passwd):
 def user2cookie(user, max_age):
     # build cookie string by: id-expires-sha1
     expires = str(int(time.time() + max_age))
-    s = '%s-%s-%s-%s' % (user.id, user.passwd, expires, _COOKIE_KEY)
+    s = '%s-%s-%s-%s' % (user.id, user.passwd, expires, COOKIE_KEY)
     L = [user.id, expires, hashlib.sha1(s.encode('utf-8')).hexdigest()]
     return '-'.join(L)
 

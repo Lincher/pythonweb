@@ -110,11 +110,11 @@ class Model(dict, metaclass=ModelMetaclass):
     @classmethod
     async def find_by_pk(cls, pk):
         "find object by primary key."
-        rs = await db.select('%s where `%s`=?' % (cls.__select__, cls.__primary_key__),
+        row = await db.select('%s where `%s`=?' % (cls.__select__, cls.__primary_key__),
                              [pk], 1)
-        if len(rs) == 0:
+        if len(row) == 0:
             return None
-        return cls(**[0])
+        return cls(**row[0])
 
     @classmethod
     async def findAll(cls, where=None, args=None, **kw):
@@ -144,7 +144,10 @@ class Model(dict, metaclass=ModelMetaclass):
         rows = await db.select(' '.join(sql), args)
         if rows == {}:
             logging.info('found nothing in this table')
-        return [cls(**r) for r in rows]  # 返回一个table对象
+        return [cls(**r) for r in rows]  
+        # rows 是一个list,每一项是一个json/dict,
+        # cls()通过一个元类生成一个类对象
+        # 再通过列表生成式 生成一个 对象实例的 list
 
     @classmethod
     async def findNumber(cls, selectField, where=None, args=None):

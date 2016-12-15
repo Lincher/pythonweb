@@ -1,20 +1,9 @@
-<style>
-.hahah{
-    color:#aaa;
-}
-.xixixi{
-    color:red;
-}
-</style>
 
 <div >
-<h1 align=center class="xixixi">ReadME</h1>
+<h1 align=center >ReadME</h1>
 </div>
-
-<div class="hahah">
 
 ## what would i say?
-</div>
 
 ---
 
